@@ -17,8 +17,8 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
 
   late final Animation<String> _animation;
   double _width = 380.0;
-  double _height = 80.0;
-  bool emailVisible = true;
+  double _height = 70.0;
+  bool emailVisible = false;
   bool passwordVisible = false;
   bool usernameVisible = false;
   bool subscribeVisible = false;
@@ -31,12 +31,22 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
       duration: const Duration(milliseconds: 2000),
     );
 
+    // 监听动画的执行
     _animation = TextTween(content: _text).animate(_controller)
       ..addListener(() {
         setState(() {
           _height += 1;
         });
       });
+
+    // 监听动画的状态
+    _animation.addStatusListener((status) {
+      // 如果执行完成，则显示email
+      if (status == AnimationStatus.completed) {
+        _height += 60.0;
+        emailVisible = true;
+      }
+    });
 
     _controller.forward();
   }
@@ -54,9 +64,10 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
         Container(
           width: _width,
           height: _height,
-          margin: const EdgeInsets.all(50),
+          margin: const EdgeInsets.all(50.0),
+          padding: const EdgeInsets.only(top: 30.0, left: 30.0, right: 5.0),
           decoration: BoxDecoration(
-            color: Colors.grey[700],
+            color: Colors.grey[850],
             border: Border.all(width: .4, color: Colors.white60),
             borderRadius: BorderRadius.circular(5.0),
           ),
@@ -68,7 +79,15 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 builder: (context, child) {
                   return Text(
                     _animation.value,
-                    style: const TextStyle(color: Colors.white70),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w100,
+                      height: 1.5,
+                      wordSpacing: 1.2,
+                      letterSpacing: 1.8,
+                      // fontFamily: 'LiberationMono',
+                    ),
                   );
                 },
               ),
@@ -101,7 +120,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 ),
                 obscure: false,
                 onPressed: () => setState(() {
-                  _height += 50.0;
+                  _height += 80.0;
                   passwordVisible = true;
                 }),
               ),
@@ -123,7 +142,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 ),
                 obscure: true,
                 onPressed: () => setState(() {
-                  _height += 50.0;
+                  _height += 80.0;
                   usernameVisible = true;
                 }),
               ),
@@ -149,7 +168,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 ),
                 obscure: false,
                 onPressed: () => setState(() {
-                  _height += 120.0;
+                  _height += 130.0;
                   subscribeVisible = true;
                 }),
               ),
@@ -172,7 +191,11 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
           tooltip: '重复一次',
           onPressed: () {
             _controller.forward(from: 0);
-            _height = 80.0;
+            _height = 70.0;
+            emailVisible = false;
+            passwordVisible = false;
+            usernameVisible = false;
+            subscribeVisible = false;
           },
         ),
       ],
@@ -193,6 +216,9 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(
+            height: 15.0,
+          ),
           Text(
             label,
             style: const TextStyle(
@@ -207,21 +233,46 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 style: prefixStyle,
               ),
               Container(
-                width: 130.0,
-                margin: const EdgeInsets.only(left: 12.0),
-                child: TextField(
-                  autofocus: true,
-                  keyboardType: TextInputType.emailAddress,
-                  maxLines: 1,
-                  minLines: 1,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
+                width: 180.0,
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 8.0,
+                ),
+                child: SizedBox(
+                  height: 27.0,
+                  child: TextField(
+                    autofocus: true,
+                    maxLines: 1,
+                    minLines: 1,
+                    decoration: const InputDecoration(
+                      // border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 1.0,
+                        vertical: 12.0,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: .3,
+                          color: Colors.white,
+                        ),
+                      ),
+                      // enabledBorder: InputBorder.none,
+                      // enabled: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: .3,
+                          color: Color.fromARGB(255, 48, 48, 48),
+                        ),
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(20),
+                    ],
+                    obscureText: obscure,
+                    cursorColor: Colors.white,
+                    cursorWidth: .6,
                   ),
-                  style: const TextStyle(color: Colors.white),
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(20),
-                  ],
-                  obscureText: obscure,
                 ),
               ),
               OutlinedButton(
