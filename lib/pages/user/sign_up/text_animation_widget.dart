@@ -245,7 +245,6 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                     maxLines: 1,
                     minLines: 1,
                     decoration: const InputDecoration(
-                      // border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 1.0,
                         vertical: 12.0,
@@ -256,8 +255,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                           color: Colors.white,
                         ),
                       ),
-                      // enabledBorder: InputBorder.none,
-                      // enabled: true,
+                      enabled: true,
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: .3,
@@ -265,9 +263,12 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                         ),
                       ),
                     ),
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13.5,
+                    ),
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(20),
+                      LengthLimitingTextInputFormatter(23),
                     ],
                     obscureText: obscure,
                     cursorColor: Colors.white,
