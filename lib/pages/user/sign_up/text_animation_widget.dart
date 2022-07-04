@@ -1,3 +1,4 @@
+import 'package:custom_simple_github_app/pages/user/sign_up/input_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,51 +10,102 @@ class TextAnimationWidget extends StatefulWidget {
 }
 
 class _TextAnimationWidgetState extends State<TextAnimationWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
+  /// 文字、光标显示内容
+  final String t1 = 'Welcome to GitHub!';
   final String _text = 'Welcome to GitHub!'
       "\nLet’s begin the adventure";
 
-  late final AnimationController _controller;
+  /// 动画
+  late final AnimationController textAnimationController;
+  late final Animation<String> textAnimation;
+  late final Animation<int> cursorStartAnimation;
 
-  late final Animation<String> _animation;
-  double _width = 380.0;
+  /// 区域宽度
+  final double _width = 380.0;
+
+  /// 区域高度: 动态
   double _height = 70.0;
-  bool emailVisible = false;
-  bool passwordVisible = false;
-  bool usernameVisible = false;
-  bool subscribeVisible = false;
+
+  /// 光标距离左边的位置
+  double cursorLeft = 0.0;
+
+  /// 光标距离上部的位置
+  double cursorTop = 0.0;
+
+  /// 是否显示随文字出现的光标
+  bool cursorVisible = true;
+
+  /// 是否显示文字之前的光标
+  bool cursorStartVisible = true;
+
+  InputConfig emailConfig = InputConfig(visible: false);
+  InputConfig passwordConfig = InputConfig(visible: false);
+  InputConfig usernameConfig = InputConfig(visible: false);
+  InputConfig subscribeConfig = InputConfig(visible: false);
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    textAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 6000),
     );
 
-    // 监听动画的执行
-    _animation = TextTween(content: _text).animate(_controller)
-      ..addListener(() {
-        setState(() {
-          _height += 1;
-        });
+    // 监听光标动画
+    cursorStartAnimation = IntTween(begin: 1, end: 8).animate(
+      CurvedAnimation(
+        parent: textAnimationController,
+        curve: const Interval(0.0, 0.299, curve: Curves.linear),
+      ),
+    );
+    cursorStartAnimation.addListener(() {
+      setState(() {
+        int d = cursorStartAnimation.value;
+        cursorStartVisible = d % 2 != 0;
+        if (d == 10) {
+          cursorStartVisible = false;
+        }
       });
+    });
 
+    // 监听文字动画的执行
+    textAnimation = TextTween(content: _text).animate(
+      CurvedAnimation(
+        parent: textAnimationController,
+        curve: const Interval(0.3, 1.0, curve: Curves.linear),
+      ),
+    );
+    textAnimation.addListener(() {
+      setState(() {
+        int textLength = textAnimation.value.length;
+        if (textAnimation.value.length > t1.length) {
+          textLength -= t1.length;
+          cursorTop = 23.0;
+        }
+        if (textAnimation.value.length >= t1.length) {
+          _height = 120.0;
+        }
+
+        cursorLeft = textLength * 9.8;
+      });
+    });
     // 监听动画的状态
-    _animation.addStatusListener((status) {
+    textAnimation.addStatusListener((status) {
       // 如果执行完成，则显示email
       if (status == AnimationStatus.completed) {
         _height += 60.0;
-        emailVisible = true;
+        emailConfig.visible = true;
+        cursorVisible = false;
       }
     });
 
-    _controller.forward();
+    textAnimationController.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    textAnimationController.dispose();
     super.dispose();
   }
 
@@ -65,7 +117,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
           width: _width,
           height: _height,
           margin: const EdgeInsets.all(50.0),
-          padding: const EdgeInsets.only(top: 30.0, left: 30.0, right: 5.0),
+          padding: const EdgeInsets.only(top: 20.0, left: 30.0, right: 5.0),
           decoration: BoxDecoration(
             color: Colors.grey[850],
             border: Border.all(width: .4, color: Colors.white60),
@@ -75,19 +127,49 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnimatedBuilder(
-                animation: _animation,
+                animation: textAnimation,
                 builder: (context, child) {
-                  return Text(
-                    _animation.value,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w100,
-                      height: 1.5,
-                      wordSpacing: 1.2,
-                      letterSpacing: 1.8,
-                      // fontFamily: 'LiberationMono',
-                    ),
+                  return Stack(
+                    children: [
+                      Visibility(
+                        visible: cursorStartVisible,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 6.0),
+                          child: Container(
+                            width: .7,
+                            height: 12.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: cursorVisible,
+                        child: Positioned(
+                          left: cursorLeft,
+                          top: cursorTop,
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 6.0),
+                            child: Container(
+                              width: .7,
+                              height: 12.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        textAnimation.value,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w100,
+                          height: 1.5,
+                          wordSpacing: 1.2,
+                          letterSpacing: 1.8,
+                          // fontFamily: 'LiberationMono',
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),
@@ -111,17 +193,16 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
 
               */
               customInputWidget(
-                visible: emailVisible,
+                visible: emailConfig.visible,
                 label: 'Enter your email',
-                prefix: '→',
-                prefixStyle: const TextStyle(
-                  color: Color.fromRGBO(235, 83, 174, 1.0),
-                  fontSize: 15.0,
-                ),
-                obscure: false,
+                obscure: emailConfig.obscure,
+                prefix: emailConfig.prefix,
+                suffixColor: emailConfig.suffixColor,
                 onPressed: () => setState(() {
                   _height += 80.0;
-                  passwordVisible = true;
+                  passwordConfig.visible = true;
+                  emailConfig.prefix = InputConfig.successPrefix;
+                  emailConfig.suffixColor = InputConfig.successSuffixColor;
                 }),
               ),
               /*
@@ -133,18 +214,17 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
 
                */
               customInputWidget(
-                visible: passwordVisible,
+                visible: passwordConfig.visible,
                 label: 'Create a password',
-                prefix: '→',
-                prefixStyle: const TextStyle(
-                  color: Color.fromRGBO(235, 83, 174, 1.0),
-                  fontSize: 15.0,
-                ),
-                obscure: true,
+                obscure: passwordConfig.obscure,
                 onPressed: () => setState(() {
                   _height += 80.0;
-                  usernameVisible = true;
+                  usernameConfig.visible = true;
+                  passwordConfig.prefix = InputConfig.successPrefix;
+                  passwordConfig.suffixColor = InputConfig.successSuffixColor;
                 }),
+                prefix: passwordConfig.prefix,
+                suffixColor: passwordConfig.suffixColor,
               ),
               /*
               https://github.com/signup_check/username
@@ -159,29 +239,25 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
 
               */
               customInputWidget(
-                visible: usernameVisible,
+                visible: usernameConfig.visible,
                 label: 'Enter a username',
-                prefix: '→',
-                prefixStyle: const TextStyle(
-                  color: Color.fromRGBO(235, 83, 174, 1.0),
-                  fontSize: 15.0,
-                ),
-                obscure: false,
+                obscure: usernameConfig.obscure,
                 onPressed: () => setState(() {
                   _height += 130.0;
-                  subscribeVisible = true;
+                  subscribeConfig.visible = true;
+                  usernameConfig.prefix = InputConfig.successPrefix;
+                  usernameConfig.suffixColor = InputConfig.successSuffixColor;
                 }),
+                prefix: usernameConfig.prefix,
+                suffixColor: usernameConfig.suffixColor,
               ),
               customInputWidget(
-                visible: subscribeVisible,
+                visible: subscribeConfig.visible,
                 label:
                     'Would you like to receive product updates and\nannouncements via email?\nType "y" for yes or "n" for no',
-                prefix: '→',
-                prefixStyle: const TextStyle(
-                  color: Color.fromRGBO(235, 83, 174, 1.0),
-                  fontSize: 15.0,
-                ),
-                obscure: false,
+                obscure: subscribeConfig.obscure,
+                prefix: subscribeConfig.prefix,
+                suffixColor: subscribeConfig.suffixColor,
               ),
             ],
           ),
@@ -190,12 +266,16 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
           icon: const Icon(Icons.replay),
           tooltip: '重复一次',
           onPressed: () {
-            _controller.forward(from: 0);
+            textAnimationController.forward(from: 0);
             _height = 70.0;
-            emailVisible = false;
-            passwordVisible = false;
-            usernameVisible = false;
-            subscribeVisible = false;
+            emailConfig.visible = false;
+            passwordConfig.visible = false;
+            usernameConfig.visible = false;
+            subscribeConfig.visible = false;
+            cursorLeft = 0.0;
+            cursorTop = 0.0;
+            cursorVisible = true;
+            cursorStartVisible = true;
           },
         ),
       ],
@@ -205,9 +285,10 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
   Visibility customInputWidget({
     bool visible = false,
     String label = '',
-    String prefix = '',
-    TextStyle prefixStyle = const TextStyle(color: Colors.white),
     bool obscure = false,
+    bool buttonVisible = true,
+    required Color suffixColor,
+    required Text prefix,
     void Function()? onPressed,
   }) {
     return Visibility(
@@ -228,10 +309,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
           ),
           Row(
             children: [
-              Text(
-                prefix,
-                style: prefixStyle,
-              ),
+              prefix,
               Container(
                 width: 180.0,
                 margin: const EdgeInsets.symmetric(
@@ -276,20 +354,25 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                   ),
                 ),
               ),
-              OutlinedButton(
-                onPressed: onPressed,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    width: .6,
-                    // 验证前或验证失败是白色,成功是绿色
-                    color: Colors.green,
+              Visibility(
+                visible: buttonVisible,
+                child: OutlinedButton(
+                  onPressed: onPressed,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      width: .6,
+                      // 验证前或验证失败是白色,成功是绿色
+                      // color: Colors.green,
+                      color: suffixColor,
+                    ),
+                    padding: const EdgeInsets.all(10.0),
                   ),
-                  padding: const EdgeInsets.all(10.0),
-                ),
-                child: const Text(
-                  'Continue',
-                  // 验证前或验证失败是白色,成功是绿色
-                  style: TextStyle(color: Colors.green),
+                  child: Text(
+                    'Continue',
+                    // 验证前或验证失败是白色,成功是绿色
+                    // style: TextStyle(color: Colors.green),
+                    style: TextStyle(color: suffixColor),
+                  ),
                 ),
               ),
             ],
