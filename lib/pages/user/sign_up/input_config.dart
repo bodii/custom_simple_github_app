@@ -6,6 +6,8 @@ class InputConfig {
   Color suffixColor = defaultSuffixColor;
   bool obscure;
   bool buttonVisible;
+  void Function()? buttonOnTapCall;
+  TextEditingController inputController = TextEditingController();
 
   static Text get defaultPrefix => const Text(
         '→',
@@ -18,6 +20,13 @@ class InputConfig {
         '✓',
         style: TextStyle(
           color: Colors.lightGreen,
+          fontSize: 15.0,
+        ),
+      );
+  static Text get errorPrefix => const Text(
+        '✕',
+        style: TextStyle(
+          color: Colors.red,
           fontSize: 15.0,
         ),
       );

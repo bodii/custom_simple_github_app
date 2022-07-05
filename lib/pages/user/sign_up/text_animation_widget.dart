@@ -1,3 +1,4 @@
+import 'package:custom_simple_github_app/commons/verify.dart';
 import 'package:custom_simple_github_app/pages/user/sign_up/input_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +45,11 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
   InputConfig usernameConfig = InputConfig(visible: false);
   InputConfig subscribeConfig = InputConfig(visible: false);
 
+  String errorMsg = '';
+
+  bool verifySwitchVisible = true;
+  bool verifySelectVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -80,14 +86,15 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
       setState(() {
         int textLength = textAnimation.value.length;
         if (textAnimation.value.length > t1.length) {
-          textLength -= t1.length;
+          textLength -= t1.length + 2;
           cursorTop = 23.0;
         }
         if (textAnimation.value.length >= t1.length) {
-          _height = 120.0;
+          // _height = 120.0;
+          _height = 620.0;
         }
 
-        cursorLeft = textLength * 9.8;
+        cursorLeft = textLength * 10;
       });
     });
     // 监听动画的状态
@@ -116,7 +123,8 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
         Container(
           width: _width,
           height: _height,
-          margin: const EdgeInsets.all(50.0),
+          margin: const EdgeInsets.only(
+              top: 50.0, left: 50.0, right: 50.0, bottom: 10.0),
           padding: const EdgeInsets.only(top: 20.0, left: 30.0, right: 5.0),
           decoration: BoxDecoration(
             color: Colors.grey[850],
@@ -186,27 +194,51 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
               -----------------------------247095972823891933632782303025--
 
 
-              <p class="mb-0">Email is invalid or already taken</p>
+              err: Email is invalid or already taken
 
 
 
 
               */
               customInputWidget(
-                visible: emailConfig.visible,
-                label: 'Enter your email',
-                obscure: emailConfig.obscure,
-                prefix: emailConfig.prefix,
-                suffixColor: emailConfig.suffixColor,
-                onPressed: () => setState(() {
-                  _height += 80.0;
-                  passwordConfig.visible = true;
-                  emailConfig.prefix = InputConfig.successPrefix;
-                  emailConfig.suffixColor = InputConfig.successSuffixColor;
-                }),
-              ),
+                  visible: emailConfig.visible,
+                  label: 'Enter your email',
+                  obscure: emailConfig.obscure,
+                  prefix: emailConfig.prefix,
+                  suffixColor: emailConfig.suffixColor,
+                  onPressed: emailConfig.buttonOnTapCall,
+                  inputController: emailConfig.inputController,
+                  buttonVisible: emailConfig.buttonVisible,
+                  onChanged: (value) {
+                    if (value.isNotEmpty && Verify.isEmail(value)) {
+                      setState(() {
+                        emailConfig.suffixColor =
+                            InputConfig.successSuffixColor;
+                        emailConfig.buttonOnTapCall = () => setState(() {
+                              _height += 80.0;
+                              emailConfig.prefix = InputConfig.successPrefix;
+                              emailConfig.buttonVisible = false;
+                              passwordConfig.visible = true;
+                            });
+                        errorMsg = '';
+                      });
+                      debugPrint(value);
+                    } else {
+                      setState(() {
+                        emailConfig.prefix = InputConfig.defaultPrefix;
+                        emailConfig.suffixColor =
+                            InputConfig.defaultSuffixColor;
+                        emailConfig.buttonOnTapCall = null;
+                        emailConfig.buttonVisible = true;
+                      });
+                      errorMsg = 'Email is invalid or already taken';
+                    }
+                  }),
               /*
               https://github.com/password_validity_checks
+
+              Password is too short
+              Password needs a number and lowercase letter 
 
                Password is strong
 
@@ -214,18 +246,41 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
 
                */
               customInputWidget(
-                visible: passwordConfig.visible,
-                label: 'Create a password',
-                obscure: passwordConfig.obscure,
-                onPressed: () => setState(() {
-                  _height += 80.0;
-                  usernameConfig.visible = true;
-                  passwordConfig.prefix = InputConfig.successPrefix;
-                  passwordConfig.suffixColor = InputConfig.successSuffixColor;
-                }),
-                prefix: passwordConfig.prefix,
-                suffixColor: passwordConfig.suffixColor,
-              ),
+                  visible: passwordConfig.visible,
+                  label: 'Create a password',
+                  obscure: passwordConfig.obscure,
+                  onPressed: passwordConfig.buttonOnTapCall,
+                  prefix: passwordConfig.prefix,
+                  suffixColor: passwordConfig.suffixColor,
+                  inputController: passwordConfig.inputController,
+                  buttonVisible: passwordConfig.buttonVisible,
+                  onChanged: (value) {
+                    if (value.isNotEmpty && value.length > 10) {
+                      setState(() {
+                        passwordConfig.prefix = InputConfig.successPrefix;
+                        passwordConfig.suffixColor =
+                            InputConfig.successSuffixColor;
+                        passwordConfig.buttonOnTapCall = () => setState(() {
+                              _height += 80.0;
+                              passwordConfig.buttonVisible = false;
+                              usernameConfig.visible = true;
+                            });
+                        errorMsg = '';
+                      });
+                      debugPrint(value);
+                    } else {
+                      setState(() {
+                        passwordConfig.prefix = InputConfig.defaultPrefix;
+                        passwordConfig.suffixColor =
+                            InputConfig.defaultSuffixColor;
+                        passwordConfig.buttonOnTapCall = null;
+                        passwordConfig.buttonVisible = true;
+                      });
+                      errorMsg =
+                          "Make sure it's at least 15 characters OR at least 8 "
+                          "characters including a number and a lowercase letter.";
+                    }
+                  }),
               /*
               https://github.com/signup_check/username
 
@@ -239,18 +294,39 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
 
               */
               customInputWidget(
-                visible: usernameConfig.visible,
-                label: 'Enter a username',
-                obscure: usernameConfig.obscure,
-                onPressed: () => setState(() {
-                  _height += 130.0;
-                  subscribeConfig.visible = true;
-                  usernameConfig.prefix = InputConfig.successPrefix;
-                  usernameConfig.suffixColor = InputConfig.successSuffixColor;
-                }),
-                prefix: usernameConfig.prefix,
-                suffixColor: usernameConfig.suffixColor,
-              ),
+                  visible: usernameConfig.visible,
+                  label: 'Enter a username',
+                  obscure: usernameConfig.obscure,
+                  onPressed: usernameConfig.buttonOnTapCall,
+                  prefix: usernameConfig.prefix,
+                  suffixColor: usernameConfig.suffixColor,
+                  buttonVisible: usernameConfig.buttonVisible,
+                  onChanged: (value) {
+                    if (value.isNotEmpty && value.length > 10) {
+                      setState(() {
+                        usernameConfig.prefix = InputConfig.successPrefix;
+                        usernameConfig.suffixColor =
+                            InputConfig.successSuffixColor;
+                        usernameConfig.buttonOnTapCall = () => setState(() {
+                              _height += 130.0;
+                              usernameConfig.buttonVisible = false;
+                              subscribeConfig.visible = true;
+                            });
+                        errorMsg = '';
+                      });
+                      debugPrint(value);
+                    } else {
+                      setState(() {
+                        usernameConfig.prefix = InputConfig.defaultPrefix;
+                        usernameConfig.suffixColor =
+                            InputConfig.defaultSuffixColor;
+                        usernameConfig.buttonOnTapCall = null;
+                      });
+                      errorMsg =
+                          "Make sure it's at least 15 characters OR at least 8 "
+                          "characters including a number and a lowercase letter.";
+                    }
+                  }),
               customInputWidget(
                 visible: subscribeConfig.visible,
                 label:
@@ -259,7 +335,106 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 prefix: subscribeConfig.prefix,
                 suffixColor: subscribeConfig.suffixColor,
               ),
+              // 回答问题，以证明是真人
+              Visibility(
+                visible: true,
+                child: Container(
+                  width: _width - 30.0,
+                  height: 400.0,
+                  margin: EdgeInsets.zero,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        ' Verify your account',
+                        style: TextStyle(
+                          color: Color.fromRGBO(59, 255, 248, 1.0),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Visibility(
+                        visible: verifySwitchVisible,
+                        child: Container(
+                          width: _width - 30.0,
+                          height: 380.0,
+                          decoration: BoxDecoration(
+                            border:
+                                Border.all(color: Colors.white54, width: .6),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          child: Column(
+                            children: [
+                              const Text(
+                                '验证',
+                                style: TextStyle(
+                                  color: Colors.white60,
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                              const Text(
+                                '请回答此问题\n以证明您是真人',
+                                style: TextStyle(
+                                  color: Color.fromRGBO(59, 255, 248, 1.0),
+                                  fontWeight: FontWeight.w200,
+                                ),
+                              ),
+                              Container(
+                                width: double.infinity,
+                                height: 35.0,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.white38, width: .6),
+                                  borderRadius: BorderRadius.circular(3.0),
+                                ),
+                                child: OutlinedButton(
+                                  child: const Text('验证',
+                                      style: TextStyle(color: Colors.white60)),
+                                  onPressed: () {
+                                    setState(() {
+                                      verifySwitchVisible = false;
+                                      verifySelectVisible = true;
+                                    });
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: verifySelectVisible,
+                        child: Column(
+                          children: [
+                            const Text(
+                              '选出旋涡星系',
+                              style: TextStyle(
+                                color: Color.fromRGBO(59, 255, 248, 1.0),
+                                fontWeight: FontWeight.w200,
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                Image.asset('assets/images/verify/01_1.jpg'),
+                                Image.asset('assets/images/verify/01_2.jpg'),
+                                Image.asset('assets/images/verify/01_3.jpg'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
+          ),
+        ),
+        Text(
+          errorMsg,
+          style: const TextStyle(
+            color: Colors.white38,
+            fontWeight: FontWeight.w100,
           ),
         ),
         IconButton(
@@ -290,6 +465,8 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
     required Color suffixColor,
     required Text prefix,
     void Function()? onPressed,
+    TextEditingController? inputController,
+    void Function(String)? onChanged,
   }) {
     return Visibility(
       visible: visible,
@@ -304,7 +481,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
             label,
             style: const TextStyle(
               color: Color.fromRGBO(59, 255, 248, 1.0),
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
           ),
           Row(
@@ -318,7 +495,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 ),
                 child: SizedBox(
                   height: 27.0,
-                  child: TextField(
+                  child: TextFormField(
                     autofocus: true,
                     maxLines: 1,
                     minLines: 1,
@@ -351,6 +528,8 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                     obscureText: obscure,
                     cursorColor: Colors.white,
                     cursorWidth: .6,
+                    controller: inputController,
+                    onChanged: onChanged,
                   ),
                 ),
               ),
