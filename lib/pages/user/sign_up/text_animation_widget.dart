@@ -1,5 +1,6 @@
 import 'package:custom_simple_github_app/commons/verify.dart';
 import 'package:custom_simple_github_app/pages/user/sign_up/input_config.dart';
+import 'package:custom_simple_github_app/pages/user/sign_up/verify_content_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -40,15 +41,13 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
   /// 是否显示文字之前的光标
   bool cursorStartVisible = true;
 
-  InputConfig emailConfig = InputConfig(visible: false);
-  InputConfig passwordConfig = InputConfig(visible: false);
-  InputConfig usernameConfig = InputConfig(visible: false);
-  InputConfig subscribeConfig = InputConfig(visible: false);
+  InputConfig emailConfig = InputConfig();
+  InputConfig passwordConfig = InputConfig();
+  InputConfig usernameConfig = InputConfig();
+  InputConfig subscribeConfig = InputConfig();
+  bool verifyStarWidgetVisible = false;
 
   String errorMsg = '';
-
-  bool verifySwitchVisible = true;
-  bool verifySelectVisible = false;
 
   @override
   void initState() {
@@ -90,8 +89,8 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
           cursorTop = 23.0;
         }
         if (textAnimation.value.length >= t1.length) {
-          // _height = 120.0;
-          _height = 620.0;
+          _height = 120.0;
+          // _height = 520.0;
         }
 
         cursorLeft = textLength * 10;
@@ -118,43 +117,32 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: _width,
-          height: _height,
-          margin: const EdgeInsets.only(
-              top: 50.0, left: 50.0, right: 50.0, bottom: 10.0),
-          padding: const EdgeInsets.only(top: 20.0, left: 30.0, right: 5.0),
-          decoration: BoxDecoration(
-            color: Colors.grey[850],
-            border: Border.all(width: .4, color: Colors.white60),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AnimatedBuilder(
-                animation: textAnimation,
-                builder: (context, child) {
-                  return Stack(
-                    children: [
-                      Visibility(
-                        visible: cursorStartVisible,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 6.0),
-                          child: Container(
-                            width: .7,
-                            height: 12.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: cursorVisible,
-                        child: Positioned(
-                          left: cursorLeft,
-                          top: cursorTop,
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
+        children: [
+          Container(
+            width: 360.0,
+            height: _height,
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.only(
+                top: 50.0, left: 30.0, right: 30.0, bottom: 10.0),
+            padding: const EdgeInsets.only(top: 20.0, left: 30.0, right: 30.0),
+            decoration: BoxDecoration(
+              color: Colors.grey[850],
+              border: Border.all(width: .4, color: Colors.white60),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnimatedBuilder(
+                  animation: textAnimation,
+                  builder: (context, child) {
+                    return Stack(
+                      children: [
+                        Visibility(
+                          visible: cursorStartVisible,
                           child: Container(
                             margin: const EdgeInsets.only(top: 6.0),
                             child: Container(
@@ -164,43 +152,57 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                             ),
                           ),
                         ),
-                      ),
-                      Text(
-                        textAnimation.value,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w100,
-                          height: 1.5,
-                          wordSpacing: 1.2,
-                          letterSpacing: 1.8,
-                          // fontFamily: 'LiberationMono',
+                        Visibility(
+                          visible: cursorVisible,
+                          child: Positioned(
+                            left: cursorLeft,
+                            top: cursorTop,
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 6.0),
+                              child: Container(
+                                width: .7,
+                                height: 12.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              /*
-              https://github.com/email_validity_checks
-              -----------------------------247095972823891933632782303025
-              Content-Disposition: form-data; name="authenticity_token"
-
-              qqcTnXEDlmPlm7uC166PxDbaE+tAqKCmcJjWpGGcT69nJSOhkWSu+YOL4ZKEvqYADo3eT5TDtDzt2oKtAkCNAg==
-              -----------------------------247095972823891933632782303025
-              Content-Disposition: form-data; name="value"
-
-              dsfdsfsdfsdffdsfsd@cc.cc
-              -----------------------------247095972823891933632782303025--
-
-
-              err: Email is invalid or already taken
-
-
-
-
-              */
-              customInputWidget(
+                        Text(
+                          textAnimation.value,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w100,
+                            height: 1.5,
+                            wordSpacing: 1.2,
+                            letterSpacing: 1.8,
+                            // fontFamily: 'LiberationMono',
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                /*
+                https://github.com/email_validity_checks
+                -----------------------------247095972823891933632782303025
+                Content-Disposition: form-data; name="authenticity_token"
+    
+                qqcTnXEDlmPlm7uC166PxDbaE+tAqKCmcJjWpGGcT69nJSOhkWSu+YOL4ZKEvqYADo3eT5TDtDzt2oKtAkCNAg==
+                -----------------------------247095972823891933632782303025
+                Content-Disposition: form-data; name="value"
+    
+                dsfdsfsdfsdffdsfsd@cc.cc
+                -----------------------------247095972823891933632782303025--
+    
+    
+                err: Email is invalid or already taken
+    
+    
+    
+    
+                */
+                customInputWidget(
                   visible: emailConfig.visible,
                   label: 'Enter your email',
                   obscure: emailConfig.obscure,
@@ -233,19 +235,20 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                       });
                       errorMsg = 'Email is invalid or already taken';
                     }
-                  }),
-              /*
-              https://github.com/password_validity_checks
-
-              Password is too short
-              Password needs a number and lowercase letter 
-
-               Password is strong
-
-              Make sure it's at least 15 characters OR at least 8 characters including a number and a lowercase letter.
-
-               */
-              customInputWidget(
+                  },
+                ),
+                /*
+                https://github.com/password_validity_checks
+    
+                Password is too short
+                Password needs a number and lowercase letter 
+    
+                 Password is strong
+    
+                Make sure it's at least 15 characters OR at least 8 characters including a number and a lowercase letter.
+    
+                 */
+                customInputWidget(
                   visible: passwordConfig.visible,
                   label: 'Create a password',
                   obscure: passwordConfig.obscure,
@@ -280,20 +283,21 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                           "Make sure it's at least 15 characters OR at least 8 "
                           "characters including a number and a lowercase letter.";
                     }
-                  }),
-              /*
-              https://github.com/signup_check/username
-
-              <div class="m-1">
-                <div class="mb-1">
-                  Username sdfdsf is not available.
+                  },
+                ),
+                /*
+                https://github.com/signup_check/username
+    
+                <div class="m-1">
+                  <div class="mb-1">
+                    Username sdfdsf is not available.
+                  </div>
                 </div>
-              </div>
-
-              sdfdsf1 is available.
-
-              */
-              customInputWidget(
+    
+                sdfdsf1 is available.
+    
+                */
+                customInputWidget(
                   visible: usernameConfig.visible,
                   label: 'Enter a username',
                   obscure: usernameConfig.obscure,
@@ -321,139 +325,89 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                         usernameConfig.suffixColor =
                             InputConfig.defaultSuffixColor;
                         usernameConfig.buttonOnTapCall = null;
+                        usernameConfig.buttonVisible = true;
                       });
                       errorMsg =
                           "Make sure it's at least 15 characters OR at least 8 "
                           "characters including a number and a lowercase letter.";
                     }
-                  }),
-              customInputWidget(
-                visible: subscribeConfig.visible,
-                label:
-                    'Would you like to receive product updates and\nannouncements via email?\nType "y" for yes or "n" for no',
-                obscure: subscribeConfig.obscure,
-                prefix: subscribeConfig.prefix,
-                suffixColor: subscribeConfig.suffixColor,
-              ),
-              // 回答问题，以证明是真人
-              Visibility(
-                visible: true,
-                child: Container(
-                  width: _width - 30.0,
-                  height: 400.0,
-                  margin: EdgeInsets.zero,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text(
-                        ' Verify your account',
-                        style: TextStyle(
-                          color: Color.fromRGBO(59, 255, 248, 1.0),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Visibility(
-                        visible: verifySwitchVisible,
-                        child: Container(
-                          width: _width - 30.0,
-                          height: 380.0,
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.white54, width: .6),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          child: Column(
-                            children: [
-                              const Text(
-                                '验证',
-                                style: TextStyle(
-                                  color: Colors.white60,
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                              const Text(
-                                '请回答此问题\n以证明您是真人',
-                                style: TextStyle(
-                                  color: Color.fromRGBO(59, 255, 248, 1.0),
-                                  fontWeight: FontWeight.w200,
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                height: 35.0,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.white38, width: .6),
-                                  borderRadius: BorderRadius.circular(3.0),
-                                ),
-                                child: OutlinedButton(
-                                  child: const Text('验证',
-                                      style: TextStyle(color: Colors.white60)),
-                                  onPressed: () {
-                                    setState(() {
-                                      verifySwitchVisible = false;
-                                      verifySelectVisible = true;
-                                    });
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: verifySelectVisible,
-                        child: Column(
-                          children: [
-                            const Text(
-                              '选出旋涡星系',
-                              style: TextStyle(
-                                color: Color.fromRGBO(59, 255, 248, 1.0),
-                                fontWeight: FontWeight.w200,
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                Image.asset('assets/images/verify/01_1.jpg'),
-                                Image.asset('assets/images/verify/01_2.jpg'),
-                                Image.asset('assets/images/verify/01_3.jpg'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  },
                 ),
+                customInputWidget(
+                  visible: subscribeConfig.visible,
+                  label:
+                      'Would you like to receive product updates and\nannouncements via email?\nType "y" for yes or "n" for no',
+                  obscure: subscribeConfig.obscure,
+                  prefix: subscribeConfig.prefix,
+                  suffixColor: subscribeConfig.suffixColor,
+                  buttonVisible: subscribeConfig.buttonVisible,
+                  onPressed: subscribeConfig.buttonOnTapCall,
+                  onChanged: (value) {
+                    if (value.isNotEmpty && ['y', 'n'].contains(value)) {
+                      setState(() {
+                        subscribeConfig.prefix = InputConfig.successPrefix;
+                        subscribeConfig.suffixColor =
+                            InputConfig.successSuffixColor;
+                        subscribeConfig.buttonVisible = true;
+
+                        // verifyStarWidgetVisible = true;
+                        subscribeConfig.buttonOnTapCall = () => setState(() {
+                              _height += 340.0;
+                              subscribeConfig.buttonVisible = false;
+                              verifyStarWidgetVisible = true;
+                            });
+                        errorMsg = '';
+                      });
+                      debugPrint(value);
+                    } else {
+                      setState(() {
+                        subscribeConfig.prefix = InputConfig.defaultPrefix;
+                        subscribeConfig.suffixColor =
+                            InputConfig.defaultSuffixColor;
+                        subscribeConfig.buttonOnTapCall = null;
+                        verifyStarWidgetVisible = false;
+                        errorMsg = '';
+                      });
+                    }
+                  },
+                ),
+                // 回答问题，以证明是真人
+                Visibility(
+                  visible: verifyStarWidgetVisible,
+                  child: const VerifyContentWidget(),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: 320.0,
+            child: Text(
+              errorMsg,
+              style: const TextStyle(
+                color: Colors.white38,
+                fontWeight: FontWeight.w100,
               ),
-            ],
+            ),
           ),
-        ),
-        Text(
-          errorMsg,
-          style: const TextStyle(
-            color: Colors.white38,
-            fontWeight: FontWeight.w100,
+          IconButton(
+            icon: const Icon(Icons.replay),
+            tooltip: '重复一次',
+            onPressed: () {
+              textAnimationController.forward(from: 0);
+              _height = 70.0;
+              emailConfig.visible = false;
+              passwordConfig.visible = false;
+              usernameConfig.visible = false;
+              subscribeConfig.visible = false;
+              verifyStarWidgetVisible = false;
+              cursorLeft = 0.0;
+              cursorTop = 0.0;
+              cursorVisible = true;
+              cursorStartVisible = true;
+            },
           ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.replay),
-          tooltip: '重复一次',
-          onPressed: () {
-            textAnimationController.forward(from: 0);
-            _height = 70.0;
-            emailConfig.visible = false;
-            passwordConfig.visible = false;
-            usernameConfig.visible = false;
-            subscribeConfig.visible = false;
-            cursorLeft = 0.0;
-            cursorTop = 0.0;
-            cursorVisible = true;
-            cursorStartVisible = true;
-          },
-        ),
-      ],
+        ],
+      ),
     );
   }
 

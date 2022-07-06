@@ -34,7 +34,7 @@ class InputConfig {
   static Color get successSuffixColor => Colors.lightGreen;
 
   InputConfig({
-    required this.visible,
+    this.visible = false,
     this.obscure = false,
     this.buttonVisible = true,
   });

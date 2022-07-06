@@ -1,9 +1,11 @@
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:custom_simple_github_app/pages/home/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 void main() {
+  debugPaintBaselinesEnabled = false;
   runApp(const MyApp());
 }
 

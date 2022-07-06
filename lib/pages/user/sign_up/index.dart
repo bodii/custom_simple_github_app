@@ -10,6 +10,8 @@ class SignUpView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign up')),
       body: Container(
+        height: double.infinity,
+        width: double.infinity,
         decoration: const BoxDecoration(color: Colors.black87),
         child: const TextAnimationWidget(),
       ),
