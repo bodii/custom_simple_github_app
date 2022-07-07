@@ -1,4 +1,5 @@
 import 'package:custom_simple_github_app/commons/verify.dart';
+import 'package:custom_simple_github_app/pages/user/sign_up/custom_input_widget.dart';
 import 'package:custom_simple_github_app/pages/user/sign_up/input_config.dart';
 import 'package:custom_simple_github_app/pages/user/sign_up/verify_content_widget.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
   bool cursorStartVisible = true;
 
   InputConfig emailConfig = InputConfig();
-  InputConfig passwordConfig = InputConfig();
+  InputConfig passwordConfig = InputConfig(obscure: true);
   InputConfig usernameConfig = InputConfig();
   InputConfig subscribeConfig = InputConfig();
   bool verifyStarWidgetVisible = false;
@@ -122,7 +123,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
       child: Column(
         children: [
           Container(
-            width: 360.0,
+            width: 382.0,
             height: _height,
             alignment: Alignment.topLeft,
             margin: const EdgeInsets.only(
@@ -202,7 +203,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
     
     
                 */
-                customInputWidget(
+                CustomInputWidget(
                   visible: emailConfig.visible,
                   label: 'Enter your email',
                   obscure: emailConfig.obscure,
@@ -248,7 +249,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 Make sure it's at least 15 characters OR at least 8 characters including a number and a lowercase letter.
     
                  */
-                customInputWidget(
+                CustomInputWidget(
                   visible: passwordConfig.visible,
                   label: 'Create a password',
                   obscure: passwordConfig.obscure,
@@ -297,7 +298,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 sdfdsf1 is available.
     
                 */
-                customInputWidget(
+                CustomInputWidget(
                   visible: usernameConfig.visible,
                   label: 'Enter a username',
                   obscure: usernameConfig.obscure,
@@ -333,7 +334,7 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                     }
                   },
                 ),
-                customInputWidget(
+                CustomInputWidget(
                   visible: subscribeConfig.visible,
                   label:
                       'Would you like to receive product updates and\nannouncements via email?\nType "y" for yes or "n" for no',
@@ -388,127 +389,6 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
                 fontWeight: FontWeight.w100,
               ),
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.replay),
-            tooltip: '重复一次',
-            onPressed: () {
-              textAnimationController.forward(from: 0);
-              _height = 70.0;
-              emailConfig.visible = false;
-              passwordConfig.visible = false;
-              usernameConfig.visible = false;
-              subscribeConfig.visible = false;
-              verifyStarWidgetVisible = false;
-              cursorLeft = 0.0;
-              cursorTop = 0.0;
-              cursorVisible = true;
-              cursorStartVisible = true;
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Visibility customInputWidget({
-    bool visible = false,
-    String label = '',
-    bool obscure = false,
-    bool buttonVisible = true,
-    required Color suffixColor,
-    required Text prefix,
-    void Function()? onPressed,
-    TextEditingController? inputController,
-    void Function(String)? onChanged,
-  }) {
-    return Visibility(
-      visible: visible,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 15.0,
-          ),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Color.fromRGBO(59, 255, 248, 1.0),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Row(
-            children: [
-              prefix,
-              Container(
-                width: 180.0,
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 10.0,
-                  vertical: 8.0,
-                ),
-                child: SizedBox(
-                  height: 27.0,
-                  child: TextFormField(
-                    autofocus: true,
-                    maxLines: 1,
-                    minLines: 1,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 1.0,
-                        vertical: 12.0,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: .3,
-                          color: Colors.white,
-                        ),
-                      ),
-                      enabled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: .3,
-                          color: Color.fromARGB(255, 48, 48, 48),
-                        ),
-                      ),
-                    ),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13.5,
-                    ),
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(23),
-                    ],
-                    obscureText: obscure,
-                    cursorColor: Colors.white,
-                    cursorWidth: .6,
-                    controller: inputController,
-                    onChanged: onChanged,
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: buttonVisible,
-                child: OutlinedButton(
-                  onPressed: onPressed,
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      width: .6,
-                      // 验证前或验证失败是白色,成功是绿色
-                      // color: Colors.green,
-                      color: suffixColor,
-                    ),
-                    padding: const EdgeInsets.all(10.0),
-                  ),
-                  child: Text(
-                    'Continue',
-                    // 验证前或验证失败是白色,成功是绿色
-                    // style: TextStyle(color: Colors.green),
-                    style: TextStyle(color: suffixColor),
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),

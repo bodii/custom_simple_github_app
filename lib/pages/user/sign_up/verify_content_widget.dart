@@ -127,22 +127,25 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Column(
-                        children: [
-                          for (int col = 0; col <= 1; col++)
-                            Row(
-                              children: [
-                                for (int n in verifySecondName.sublist(
-                                    0 + (col * 3), 3 + (col * 3)))
-                                  VerifyImageWidget(
-                                    imageFirstName: verifyFirstName.first,
-                                    imageSecondName: '$n',
-                                  ),
-                              ],
-                            ),
-                        ],
+                    SizedBox(
+                      height: 205.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.5),
+                        child: Column(
+                          children: [
+                            for (int col = 0; col <= 1; col++)
+                              Row(
+                                children: [
+                                  for (int n in verifySecondName.sublist(
+                                      0 + (col * 3), 3 + (col * 3)))
+                                    VerifyImageWidget(
+                                      imageFirstName: verifyFirstName.first,
+                                      imageSecondName: '$n',
+                                    ),
+                                ],
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                     Container(

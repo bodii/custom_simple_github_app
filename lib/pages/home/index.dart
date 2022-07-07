@@ -250,65 +250,69 @@ class _SearchWidgetState extends State<SearchWidget> {
               ],
             ),
           ),
-          Visibility(
-            visible: hasVisibitySearchJump,
-            child: GestureDetector(
-              onTap: () => Get.toNamed(AppRoutes.repositorySearch),
-              child: MouseRegion(
-                onEnter: (PointerEnterEvent e) {
-                  setState(() {
-                    hasVisibitySearchJump = searchText.isNotEmpty;
-                    hasInput = true;
-                  });
-                },
-                onExit: (PointerExitEvent e) {
-                  setState(() {
-                    hasVisibitySearchJump = false;
-                    hasInput = false;
-                  });
-                },
-                child: Container(
-                  width: searchWidth,
-                  height: 50.0,
-                  margin: const EdgeInsets.only(top: 35.0),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[800],
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(6.0),
+          Positioned(
+            top: 36.5,
+            child: Visibility(
+              visible: hasVisibitySearchJump,
+              child: GestureDetector(
+                onTap: () => Get.toNamed(AppRoutes.repositorySearch),
+                child: MouseRegion(
+                  onEnter: (PointerEnterEvent e) {
+                    setState(() {
+                      hasVisibitySearchJump = searchText.isNotEmpty;
+                      hasInput = true;
+                    });
+                  },
+                  onExit: (PointerExitEvent e) {
+                    setState(() {
+                      hasVisibitySearchJump = false;
+                      hasInput = false;
+                    });
+                  },
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    width: searchWidth,
+                    height: 50.0,
+                    decoration: BoxDecoration(
+                      color: Colors.blue[800],
+                      borderRadius: const BorderRadius.vertical(
+                        bottom: Radius.circular(6.0),
+                      ),
+                      border: Border.all(color: Colors.black38, width: .7),
                     ),
-                    border: Border.all(color: Colors.black38, width: .7),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const Icon(Icons.search, color: Colors.white60),
-                      SizedBox(
-                        width: 100.0,
-                        child: Text(
-                          searchText,
-                          style: const TextStyle(
-                            color: Colors.white60,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Icon(Icons.search, color: Colors.white60),
+                        SizedBox(
+                          width: 100.0,
+                          child: Text(
+                            searchText,
+                            style: const TextStyle(
+                              color: Colors.white60,
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        width: 80.0,
-                        height: 25.0,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[850],
-                          borderRadius: BorderRadius.circular(4.0),
-                          border: Border.all(width: .7, color: Colors.white38),
-                        ),
-                        child: const Text(
-                          'All GitHub   ↵',
-                          style: TextStyle(
-                            color: Colors.white54,
-                            fontSize: 10.0,
+                        Container(
+                          width: 80.0,
+                          height: 25.0,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[850],
+                            borderRadius: BorderRadius.circular(4.0),
+                            border:
+                                Border.all(width: .7, color: Colors.white38),
+                          ),
+                          child: const Text(
+                            'All GitHub   ↵',
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 10.0,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
