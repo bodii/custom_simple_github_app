@@ -14,8 +14,8 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
 
   final List<String> verifyFirstName = ['01', '02'];
   final List<int> verifySecondName = [1, 2, 3, 4, 5, 6];
-  bool checkRefash = false;
-  bool checkVerify = false;
+  bool clickRefash = false;
+  bool clickVerify = false;
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color:
-                              checkVerify ? Colors.lightGreen : Colors.white38,
+                              clickVerify ? Colors.lightGreen : Colors.white38,
                           width: .6,
                         ),
                         borderRadius: BorderRadius.circular(3.0),
@@ -87,7 +87,7 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
                         child: OutlinedButton(
                           child: Text('验证',
                               style: TextStyle(
-                                color: checkVerify
+                                color: clickVerify
                                     ? Colors.lightGreen
                                     : Colors.white60,
                               )),
@@ -100,12 +100,12 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
                         ),
                         onHover: (_) {
                           setState(() {
-                            checkVerify = true;
+                            clickVerify = true;
                           });
                         },
                         onExit: (_) {
                           setState(() {
-                            checkVerify = false;
+                            clickVerify = false;
                           });
                         },
                       ),
@@ -155,7 +155,7 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color:
-                              checkRefash ? Colors.lightGreen : Colors.white60,
+                              clickRefash ? Colors.lightGreen : Colors.white60,
                           width: .5,
                         ),
                         borderRadius: BorderRadius.circular(3.0),
@@ -163,12 +163,12 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
                       child: MouseRegion(
                         onHover: (value) {
                           setState(() {
-                            checkRefash = true;
+                            clickRefash = true;
                           });
                         },
                         onExit: (value) {
                           setState(() {
-                            checkRefash = false;
+                            clickRefash = false;
                           });
                         },
                         child: OutlinedButton(
@@ -180,7 +180,7 @@ class _VerifyContentWidgetState extends State<VerifyContentWidget> {
                           },
                           child: Icon(
                             Icons.loop,
-                            color: checkRefash
+                            color: clickRefash
                                 ? Colors.lightGreen
                                 : Colors.white60,
                             size: 19.0,
