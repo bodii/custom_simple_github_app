@@ -14,7 +14,8 @@ class ForgotPasswordView extends StatefulWidget {
 }
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
-  bool verifyHomeVisible = true;
+  bool startLoadImage = true;
+  bool verifyHomeVisible = false;
   bool verifySelectImageVisible = false;
   final Map<String, String> selectImages = {
     'lock': '锁',
@@ -30,6 +31,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   void initState() {
     super.initState();
     verifySecondName.shuffle();
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        verifyHomeVisible = true;
+        startLoadImage = false;
+      });
+    });
   }
 
   @override
@@ -206,6 +213,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Visibility(
+                            visible: startLoadImage,
+                            child: Image.asset(
+                              'assets/images/octocat-spinner-128.gif',
+                              width: 80.0,
+                            ),
+                          ),
                           Visibility(
                             visible: verifyHomeVisible,
                             child: Column(

@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 void main() {
-  debugPaintBaselinesEnabled = false;
+  // debugPaintBaselinesEnabled = true;
   runApp(const MyApp());
 }
 
