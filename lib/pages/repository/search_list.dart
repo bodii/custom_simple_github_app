@@ -1,33 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class RepositorySearchListView extends StatelessWidget {
   const RepositorySearchListView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<String> topics = [
-      'chart',
-      'visualization',
-      'pie-chart',
-      'charting-library',
-      'webview',
-      'highcharts',
-      'graphics',
-      'dynamic',
-      'draw',
-      'area-chart',
-      'radar-chart',
-      'hybrid',
-      'bubble-chart',
-      'line-charts',
-      'ios-charts',
-      'column-chart',
-      'polar-chart',
-      'stacked-chart',
-      'chart-types',
-      'support-graphics',
-    ];
+    String searchText = Get.arguments;
+    TextEditingController searchController =
+        TextEditingController(text: searchText);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Repo search list')),
       body: Container(
@@ -47,6 +30,7 @@ class RepositorySearchListView extends StatelessWidget {
                   width: 300.0,
                   height: 35.0,
                   child: TextField(
+                    controller: searchController,
                     decoration: const InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(

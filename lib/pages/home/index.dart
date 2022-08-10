@@ -255,7 +255,10 @@ class _SearchWidgetState extends State<SearchWidget> {
             child: Visibility(
               visible: hasVisibitySearchJump,
               child: GestureDetector(
-                onTap: () => Get.toNamed(AppRoutes.repositorySearch),
+                onTap: () => Get.toNamed(
+                  AppRoutes.repositorySearch,
+                  arguments: searchText,
+                ),
                 child: MouseRegion(
                   onEnter: (PointerEnterEvent e) {
                     setState(() {

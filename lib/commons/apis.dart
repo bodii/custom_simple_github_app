@@ -10,7 +10,9 @@ class Apis {
   final Client _client = Client();
 
   final Map<String, String> _headers = {
-    HttpHeaders.acceptHeader: 'Accept: application/vnd.github.v3+json',
+    HttpHeaders.acceptHeader: "application/vnd.github.squirrel-girl-preview,"
+        "application/vnd.github.symmetra-preview+json",
+    // HttpHeaders.authorizationHeader: "API_TOKEN"
   };
 
   Future<Response> query({String? path, Map<String, dynamic>? params}) {
@@ -23,9 +25,22 @@ class Apis {
     return response;
   }
 
+  Future<Response> post(
+      {String? path,
+      Map<String, String>? headers,
+      Map<String, dynamic>? params}) {
+    Future<Response> response = _client.post(
+      Uri.https('api.github.com', path ?? '', params),
+      headers: headers,
+    );
+
+    return response;
+  }
+
+  /// https://api.github.com/users/freeCodeCamp
   void queryUser(User user) async {
     var response = await query(
-      path: '/users/${user.username}',
+      path: '/users/${user.login}',
     );
     Map<String, dynamic> res = jsonDecode(utf8.decode(response.bodyBytes));
     if (res.containsKey('message')) {
@@ -35,9 +50,6 @@ class Apis {
       debugPrint(res['message']);
       return;
     }
-    /*
-     {login: bodii, id: 17775161, node_id: MDQ6VXNlcjE3Nzc1MTYx, avatar_url: https://avatars.githubusercontent.com/u/17775161?v=4, gravatar_id: , url: https://api.github.com/users/bodii, html_url: https://github.com/bodii, followers_url: https://api.github.com/users/bodii/followers, following_url: https://api.github.com/users/bodii/following{/other_user}, gists_url: https://api.github.com/users/bodii/gists{/gist_id}, starred_url: https://api.github.com/users/bodii/starred{/owner}{/repo}, subscriptions_url: https://api.github.com/users/bodii/subscriptions, organizations_url: https://api.github.com/users/bodii/orgs, repos_url: https://api.github.com/users/bodii/repos, events_url: https://api.github.com/users/bodii/events{/privacy}, received_events_url: https://api.github.com/users/bodii/received_events, type: User, site_admin: false, name: null, company: null, blog: , location: null, email: null, hireable: null, bio: null, twitter_username: null, public_repos: 1, public_gists: 0, followers: 5, following: 27, created_at: 2016-03-11T02:12:59Z, updated_at: 2022-03-22T09:56:55Z}
-    */
 
     debugPrint(res['login']);
   }
@@ -49,5 +61,27 @@ class Apis {
     debugPrint(_headers.toString());
     var response = await query(path: '/users/$username');
     debugPrint(response.body);
+  }
+
+  /// https://docs.github.com/cn/rest/search
+  /// https://api.github.com/search/repositories?q=react&sort=stars&order=desc
+  /// https://api.github.com/repos/freeCodeCamp/freeCodeCamp
+  void querySearchRepoContext(String repoName,
+      {int page = 1, int perPage = 10}) async {
+    var path = 'search/repositories?q=$repoName&sort=stars&order=desc';
+
+    var response = await query(
+      path: path,
+    );
+    Map<String, dynamic> res = jsonDecode(utf8.decode(response.bodyBytes));
+    if (res.containsKey('message')) {
+      /*
+      {message: Not Found, documentation_url: https://docs.github.com/rest/reference/users#get-a-user} 
+      */
+      debugPrint(res['message']);
+      return;
+    }
+
+    debugPrint(res['total_count']);
   }
 }
