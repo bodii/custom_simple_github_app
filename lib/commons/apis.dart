@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:custom_simple_github_app/models/repo.dart';
+import 'package:custom_simple_github_app/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-
-import '../models/user.dart';
 
 class Apis {
   final Client _client = Client();
@@ -15,10 +15,10 @@ class Apis {
     // HttpHeaders.authorizationHeader: "API_TOKEN"
   };
 
-  Future<Response> query({String? path, Map<String, dynamic>? params}) {
+  Future<Response> query({String path = '', Map<String, dynamic>? params}) {
     var url = 'api.github.com';
     var response = _client.get(
-      Uri.https(url, path ?? '', params),
+      Uri.https(url, path, params),
       headers: _headers,
     );
 
@@ -66,22 +66,37 @@ class Apis {
   /// https://docs.github.com/cn/rest/search
   /// https://api.github.com/search/repositories?q=react&sort=stars&order=desc
   /// https://api.github.com/repos/freeCodeCamp/freeCodeCamp
-  void querySearchRepoContext(String repoName,
-      {int page = 1, int perPage = 10}) async {
-    var path = 'search/repositories?q=$repoName&sort=stars&order=desc';
+  Future<List<Repo>> querySearchRepoContext(String repoName,
+      {String page = '1', String perPage = '10'}) async {
+    var path = 'search/repositories';
+    var params = {
+      'q': repoName,
+      'sort': 'stars',
+      'order': 'desc',
+      'per_page': perPage,
+      'page': page,
+    };
 
-    var response = await query(
+    Response response = await query(
       path: path,
+      params: params,
     );
-    Map<String, dynamic> res = jsonDecode(utf8.decode(response.bodyBytes));
-    if (res.containsKey('message')) {
-      /*
-      {message: Not Found, documentation_url: https://docs.github.com/rest/reference/users#get-a-user} 
-      */
-      debugPrint(res['message']);
-      return;
+
+    if (response.statusCode != HttpStatus.ok) {
+      return [];
     }
 
-    debugPrint(res['total_count']);
+    Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    List<dynamic> items = json['items'];
+
+    List<Repo> repoList = [];
+    for (var element in items) {
+      if (element != null) {
+        repoList.add(Repo.fromJson(element as Map<String, dynamic>));
+      }
+    }
+
+    return repoList;
   }
 }

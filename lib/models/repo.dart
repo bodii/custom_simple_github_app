@@ -56,7 +56,7 @@ class Repo {
   late int size;
   late int stargazersCount;
   late int watchersCount;
-  late String language;
+  late dynamic language;
   late bool hasIssues;
   late bool hasProjects;
   late bool hasDownloads;
@@ -67,11 +67,11 @@ class Repo {
   late bool archived;
   late bool disabled;
   late int openIssuesCount;
-  late Map<String, String> license;
+  late Map<String, dynamic> license;
   late bool allowForking;
   late bool isTemplate;
   late bool webCommitSignoffRequired;
-  late List<String> topics;
+  late List<dynamic> topics;
   late String visibility;
   late int forks;
   late int openIssues;
@@ -93,7 +93,7 @@ class Repo {
     ..fork = json["fork"] as bool
     ..url = json["url"] as String
     ..forksUrl = json["forks_url"] as String
-    ..keysUrl = json["keysUrl"] as String
+    ..keysUrl = json["keys_url"] as String
     ..collaboratorsUrl = json["collaborators_url"] as String
     ..teamsUrl = json["teams_url"] as String
     ..hooksUrl = json["hooks_url"] as String
@@ -139,22 +139,22 @@ class Repo {
     ..size = json["size"] as int
     ..stargazersCount = json["stargazers_count"] as int
     ..watchersCount = json["watchers_count"] as int
-    ..language = json["language"] as String
+    ..language = json["language"]
     ..hasIssues = json["has_issues"] as bool
     ..hasProjects = json["has_projects"] as bool
     ..hasDownloads = json["has_downloads"] as bool
     ..hasWiki = json["has_wiki"] as bool
     ..hasPages = json["has_pages"] as bool
     ..forksCount = json["forks_count"] as int
-    ..mirrorUrl = json["mirror_url"] as String
+    ..mirrorUrl = json["mirror_url"]
     ..archived = json["archived"] as bool
     ..disabled = json["disabled"] as bool
     ..openIssuesCount = json["open_issues_count"] as int
-    ..license = json["license"] as Map<String, String>
+    ..license = json["license"] as Map<String, dynamic>
     ..allowForking = json["allow_forking"] as bool
     ..isTemplate = json["is_template"] as bool
     ..webCommitSignoffRequired = json["web_commit_signoff_required"] as bool
-    ..topics = json["topics"] as List<String>
+    ..topics = json["topics"]
     ..visibility = json["visibility"] as String
     ..forks = json["forks"] as int
     ..openIssues = json["open_issues"] as int

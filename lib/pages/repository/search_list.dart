@@ -1,3 +1,6 @@
+import 'package:custom_simple_github_app/commons/apis.dart';
+import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
+import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -60,7 +63,10 @@ class RepositorySearchListView extends StatelessWidget {
                   height: 35.0,
                   margin: const EdgeInsets.only(left: 10.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => Get.toNamed(
+                      AppRoutes.repositorySearch,
+                      arguments: searchText,
+                    ),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.grey.shade900,
                     ),
@@ -84,10 +90,40 @@ class RepositorySearchListView extends StatelessWidget {
                 ),
               ),
             ),
-            RepoItem(),
+            Expanded(
+              child: getRepoItemList(searchText),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget getRepoItemList(String searchText) {
+    Apis apis = Apis();
+    return FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot<List<Repo>> snapshot) {
+        print(snapshot.data?.length);
+
+        if (snapshot.connectionState == ConnectionState.active ||
+            snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+
+        if (!snapshot.hasData || snapshot.hasError) {
+          return const Text('not found!');
+        }
+
+        print(snapshot.data);
+
+        return ListView.builder(
+          itemCount: snapshot.data?.length,
+          itemBuilder: (context, index) {
+            return RepoItem(repo: snapshot.data![index]);
+          },
+        );
+      },
+      future: apis.querySearchRepoContext(searchText),
     );
   }
 }
@@ -95,7 +131,10 @@ class RepositorySearchListView extends StatelessWidget {
 class RepoItem extends StatelessWidget {
   RepoItem({
     Key? key,
+    this.repo,
   }) : super(key: key);
+
+  final Repo? repo;
 
   final List<String> topics = [
     'chart',
@@ -141,13 +180,20 @@ class RepoItem extends StatelessWidget {
                     size: 18.0,
                   ),
                   InkWell(
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Text(
-                        'Demon799/fdsfsdfdsfsdfF',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 16.0,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 250.0,
+                          minWidth: 50.0,
+                        ),
+                        child: Text(
+                          repo!.fullName,
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 16.0,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -158,16 +204,16 @@ class RepoItem extends StatelessWidget {
                 ],
               ),
               Container(
-                width: 60.0,
+                width: 30.0,
                 height: 18.0,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(color: Colors.white60, width: .6),
                 ),
-                child: const Text(
-                  'Public archive',
-                  style: TextStyle(
+                child: Text(
+                  repo!.visibility,
+                  style: const TextStyle(
                     color: Colors.white60,
                     fontSize: 8.0,
                   ),
@@ -209,9 +255,9 @@ class RepoItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Simple but Powerful web-based Control Panel',
-                style: TextStyle(
+              Text(
+                repo!.description,
+                style: const TextStyle(
                   color: Colors.white60,
                 ),
               ),
@@ -224,14 +270,14 @@ class RepoItem extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8.0, bottom: 10.0),
                 child: Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     const Icon(
                       Icons.star_border,
                       color: Colors.white60,
-                      size: 18.0,
+                      size: 16.0,
                     ),
                     const Text(
                       '4.5k',
