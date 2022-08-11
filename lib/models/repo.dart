@@ -52,7 +52,7 @@ class Repo {
   late String sshUrl;
   late String cloneUrl;
   late String svnUrl;
-  late String homepage;
+  late String? homepage;
   late int size;
   late int stargazersCount;
   late int watchersCount;
@@ -67,7 +67,7 @@ class Repo {
   late bool archived;
   late bool disabled;
   late int openIssuesCount;
-  late Map<String, dynamic> license;
+  late Map<String, dynamic>? license;
   late bool allowForking;
   late bool isTemplate;
   late bool webCommitSignoffRequired;
@@ -135,7 +135,7 @@ class Repo {
     ..sshUrl = json["ssh_url"] as String
     ..cloneUrl = json["clone_url"] as String
     ..svnUrl = json["svn_url"] as String
-    ..homepage = json["homepage"] as String
+    ..homepage = json["homepage"]
     ..size = json["size"] as int
     ..stargazersCount = json["stargazers_count"] as int
     ..watchersCount = json["watchers_count"] as int
@@ -150,7 +150,7 @@ class Repo {
     ..archived = json["archived"] as bool
     ..disabled = json["disabled"] as bool
     ..openIssuesCount = json["open_issues_count"] as int
-    ..license = json["license"] as Map<String, dynamic>
+    ..license = json["license"]
     ..allowForking = json["allow_forking"] as bool
     ..isTemplate = json["is_template"] as bool
     ..webCommitSignoffRequired = json["web_commit_signoff_required"] as bool

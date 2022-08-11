@@ -66,13 +66,18 @@ class Apis {
   /// https://docs.github.com/cn/rest/search
   /// https://api.github.com/search/repositories?q=react&sort=stars&order=desc
   /// https://api.github.com/repos/freeCodeCamp/freeCodeCamp
-  Future<List<Repo>> querySearchRepoContext(String repoName,
-      {String page = '1', String perPage = '10'}) async {
+  Future<List<Repo>> querySearchRepoContext(
+    String repoName, {
+    String page = '1',
+    String perPage = '10',
+    String sort = '',
+    String order = 'desc',
+  }) async {
     var path = 'search/repositories';
     var params = {
       'q': repoName,
-      'sort': 'stars',
-      'order': 'desc',
+      'sort': sort,
+      'order': order,
       'per_page': perPage,
       'page': page,
     };

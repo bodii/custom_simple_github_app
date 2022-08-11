@@ -1,4 +1,5 @@
 import 'package:custom_simple_github_app/commons/apis.dart';
+import 'package:custom_simple_github_app/commons/functions.dart';
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:flutter/material.dart';
@@ -103,18 +104,16 @@ class RepositorySearchListView extends StatelessWidget {
     Apis apis = Apis();
     return FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot<List<Repo>> snapshot) {
-        print(snapshot.data?.length);
-
         if (snapshot.connectionState == ConnectionState.active ||
             snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
 
         if (!snapshot.hasData || snapshot.hasError) {
           return const Text('not found!');
         }
-
-        print(snapshot.data);
 
         return ListView.builder(
           itemCount: snapshot.data?.length,
@@ -129,35 +128,12 @@ class RepositorySearchListView extends StatelessWidget {
 }
 
 class RepoItem extends StatelessWidget {
-  RepoItem({
+  const RepoItem({
     Key? key,
     this.repo,
   }) : super(key: key);
 
   final Repo? repo;
-
-  final List<String> topics = [
-    'chart',
-    'visualization',
-    'pie-chart',
-    'charting-library',
-    'webview',
-    'highcharts',
-    'graphics',
-    'dynamic',
-    'draw',
-    'area-chart',
-    'radar-chart',
-    'hybrid',
-    'bubble-chart',
-    'line-charts',
-    'ios-charts',
-    'column-chart',
-    'polar-chart',
-    'stacked-chart',
-    'chart-types',
-    'support-graphics',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +242,9 @@ class RepoItem extends StatelessWidget {
                 child: Wrap(
                   spacing: 3.0,
                   runSpacing: 1.0,
-                  children: [for (String topic in topics) topicItem(topic)],
+                  children: [
+                    for (String topic in repo!.topics) topicItem(topic)
+                  ],
                 ),
               ),
               Padding(
@@ -279,61 +257,72 @@ class RepoItem extends StatelessWidget {
                       color: Colors.white60,
                       size: 16.0,
                     ),
-                    const Text(
-                      '4.5k',
-                      style: TextStyle(
+                    Text(
+                      Funcs.intToUnit(repo!.watchersCount, 1000, 'k'),
+                      style: const TextStyle(
                         color: Colors.white60,
                         fontSize: 11.0,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(
-                      width: 18.0,
-                    ),
-                    Container(
-                      width: 10.0,
-                      height: 10.0,
-                      decoration: const BoxDecoration(
-                        color: Colors.orange,
-                        shape: BoxShape.circle,
-                      ),
-                      margin: const EdgeInsets.only(right: 5.0),
-                    ),
-                    const Text(
-                      'JavaScript',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 11.0,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 20.0,
-                    ),
-                    const Text(
-                      'MIT license',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12.0,
+                    Visibility(
+                      visible: repo!.language != null,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 10.0,
+                              height: 10.0,
+                              decoration: const BoxDecoration(
+                                color: Colors.orange,
+                                shape: BoxShape.circle,
+                              ),
+                              margin: const EdgeInsets.only(right: 4.0),
+                            ),
+                            Text(
+                              '${repo!.language}',
+                              style: const TextStyle(
+                                color: Colors.white54,
+                                fontSize: 11.0,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 10.0,
-                    ),
-                    const Text(
-                      'Updated on 9 Aug 2019',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 11.0,
+                    Visibility(
+                      visible: repo!.license != null,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          '${repo!.license?['spdx_id']} license',
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 12.0,
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 18.0,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'Updated ${Funcs.dateDiff(repo!.updatedAt)}',
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 11.0,
+                        ),
+                      ),
                     ),
-                    const Text(
-                      '1 issue needs help ',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 11.0,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        '${repo!.openIssuesCount} issue needs help ',
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 11.0,
+                        ),
                       ),
                     ),
                   ],
