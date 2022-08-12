@@ -6,15 +6,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class RepositorySearchListView extends StatelessWidget {
+class RepositorySearchListView extends StatefulWidget {
   const RepositorySearchListView({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    String searchText = Get.arguments;
-    TextEditingController searchController =
-        TextEditingController(text: searchText);
+  State<RepositorySearchListView> createState() =>
+      _RepositorySearchListViewState();
+}
 
+class _RepositorySearchListViewState extends State<RepositorySearchListView> {
+  String searchText = Get.arguments;
+
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    searchController.text = searchText;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Repo search list')),
       body: Container(
@@ -58,16 +71,41 @@ class RepositorySearchListView extends StatelessWidget {
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(30),
                     ],
+                    onSubmitted: (value) {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          searchText = value;
+                        });
+                      }
+                    },
                   ),
                 ),
                 Container(
                   height: 35.0,
                   margin: const EdgeInsets.only(left: 10.0),
                   child: ElevatedButton(
-                    onPressed: () => Get.toNamed(
-                      AppRoutes.repositorySearch,
-                      arguments: searchText,
-                    ),
+                    onPressed: () {
+                      if (searchController.text.isNotEmpty) {
+                        setState(() {
+                          searchText = searchController.text;
+                        });
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: const Text('搜索内容不能为空！'),
+                              actions: [
+                                OutlinedButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('关闭'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       primary: Colors.grey.shade900,
                     ),
@@ -231,10 +269,13 @@ class RepoItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                repo!.description,
-                style: const TextStyle(
-                  color: Colors.white60,
+              Visibility(
+                visible: repo!.description != null,
+                child: Text(
+                  repo!.description ?? '',
+                  style: const TextStyle(
+                    color: Colors.white60,
+                  ),
                 ),
               ),
               Padding(
@@ -252,17 +293,25 @@ class RepoItem extends StatelessWidget {
                 child: Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.star_border,
-                      color: Colors.white60,
-                      size: 16.0,
-                    ),
-                    Text(
-                      Funcs.intToUnit(repo!.watchersCount, 1000, 'k'),
-                      style: const TextStyle(
-                        color: Colors.white60,
-                        fontSize: 11.0,
-                        fontWeight: FontWeight.w400,
+                    Visibility(
+                      visible: repo!.watchersCount > 0,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.star_border,
+                            color: Colors.white60,
+                            size: 16.0,
+                          ),
+                          Text(
+                            Funcs.intToUnit(repo!.watchersCount, 1000, 'k'),
+                            style: const TextStyle(
+                              color: Colors.white60,
+                              fontSize: 11.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Visibility(
@@ -315,13 +364,16 @@ class RepoItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        '${repo!.openIssuesCount} issue needs help ',
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 11.0,
+                    Visibility(
+                      visible: repo!.openIssuesCount > 0,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          '${repo!.openIssuesCount} issue needs help ',
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 11.0,
+                          ),
                         ),
                       ),
                     ),

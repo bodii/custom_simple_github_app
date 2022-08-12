@@ -6,7 +6,7 @@ class Repo {
   late bool private;
   late Map<String, dynamic> owner;
   late String htmlUrl;
-  late String description;
+  late String? description;
   late bool fork;
   late String url;
   late String forksUrl;
@@ -89,7 +89,7 @@ class Repo {
     ..private = json["private"] as bool
     ..owner = json["owner"] as Map<String, dynamic>
     ..htmlUrl = json["html_url"] as String
-    ..description = json["description"] as String
+    ..description = json["description"]
     ..fork = json["fork"] as bool
     ..url = json["url"] as String
     ..forksUrl = json["forks_url"] as String

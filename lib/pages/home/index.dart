@@ -214,6 +214,14 @@ class _SearchWidgetState extends State<SearchWidget> {
                       }
                     });
                   },
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      Get.toNamed(
+                        AppRoutes.repositorySearch,
+                        arguments: value,
+                      );
+                    }
+                  },
                 ),
                 Visibility(
                   visible: !hasInput,
