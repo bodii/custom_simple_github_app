@@ -1,5 +1,6 @@
 import 'package:custom_simple_github_app/commons/apis.dart';
 import 'package:custom_simple_github_app/commons/functions.dart';
+import 'package:custom_simple_github_app/commons/globals.dart';
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:flutter/material.dart';
@@ -195,10 +196,10 @@ class RepoItem extends StatelessWidget {
                   ),
                   InkWell(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 250.0,
+                          maxWidth: 235.0,
                           minWidth: 50.0,
                         ),
                         child: Text(
@@ -215,23 +216,23 @@ class RepoItem extends StatelessWidget {
                       debugPrint('click');
                     },
                   ),
-                ],
-              ),
-              Container(
-                width: 30.0,
-                height: 18.0,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  border: Border.all(color: Colors.white60, width: .6),
-                ),
-                child: Text(
-                  repo!.visibility,
-                  style: const TextStyle(
-                    color: Colors.white60,
-                    fontSize: 8.0,
+                  Container(
+                    width: 30.0,
+                    height: 18.0,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(color: Colors.white60, width: .6),
+                    ),
+                    child: Text(
+                      repo!.visibility,
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 8.0,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               SizedBox(
                 width: 85.0,
@@ -268,6 +269,7 @@ class RepoItem extends StatelessWidget {
           padding: const EdgeInsets.only(left: 23.5, top: 2.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Visibility(
                 visible: repo!.description != null,
@@ -324,8 +326,8 @@ class RepoItem extends StatelessWidget {
                             Container(
                               width: 10.0,
                               height: 10.0,
-                              decoration: const BoxDecoration(
-                                color: Colors.orange,
+                              decoration: BoxDecoration(
+                                color: Globals.getLanguageColor(repo!.language),
                                 shape: BoxShape.circle,
                               ),
                               margin: const EdgeInsets.only(right: 4.0),
