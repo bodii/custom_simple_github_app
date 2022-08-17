@@ -3,6 +3,7 @@ import 'package:custom_simple_github_app/commons/functions.dart';
 import 'package:custom_simple_github_app/commons/globals.dart';
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
+import 'package:custom_simple_github_app/pages/repository/page_number_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -16,15 +17,31 @@ class RepositorySearchListView extends StatefulWidget {
 }
 
 class _RepositorySearchListViewState extends State<RepositorySearchListView> {
+  /// 获取路由传过来的参数
   String searchText = Get.arguments;
 
+  /// 声明一个本页搜索输入框内容的controller
   TextEditingController searchController = TextEditingController();
+
+  /// 获取数据条数
+  int repoResultCount = 0;
+
+  final PageNumberController pageCon =
+      Get.put(PageNumberController(), tag: 'page');
+
+  final Apis apis = Apis();
+
+  /// 当前页码
+  int page = 1;
 
   @override
   void initState() {
     super.initState();
 
     searchController.text = searchText;
+    pageCon.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -76,6 +93,15 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
                       if (value.isNotEmpty) {
                         setState(() {
                           searchText = value;
+                          pageCon.reset();
+                        });
+                      }
+                    },
+                    onChanged: (value) {
+                      if (value.isNotEmpty && value != searchText) {
+                        setState(() {
+                          searchText = value;
+                          pageCon.reset();
                         });
                       }
                     },
@@ -120,11 +146,11 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
                 ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 18.0, bottom: 18.0),
+            Padding(
+              padding: const EdgeInsets.only(top: 18.0, bottom: 18.0),
               child: Text(
-                '3 repository results',
-                style: TextStyle(
+                '$repoResultCount repository results',
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 20.0,
                 ),
@@ -133,6 +159,9 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
             Expanded(
               child: getRepoItemList(searchText),
             ),
+
+            // 分页导航
+            const PagesWidget(),
           ],
         ),
       ),
@@ -140,7 +169,6 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
   }
 
   Widget getRepoItemList(String searchText) {
-    Apis apis = Apis();
     return FutureBuilder(
       builder: (BuildContext context, AsyncSnapshot<List<Repo>> snapshot) {
         if (snapshot.connectionState == ConnectionState.active ||
@@ -161,7 +189,136 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
           },
         );
       },
-      future: apis.querySearchRepoContext(searchText),
+      future: apis.querySearchRepoContext(
+        searchText,
+        page: '${pageCon.page}',
+      ),
+    );
+  }
+}
+
+class PagesWidget extends StatefulWidget {
+  const PagesWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<PagesWidget> createState() => _PagesWidgetState();
+}
+
+class _PagesWidgetState extends State<PagesWidget> {
+  final PageNumberController pageCon = Get.find(tag: 'page');
+  final int limit = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    pageCon.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final PageNumberController pageCon = Get.find(tag: 'page');
+    int page = pageCon.page.value;
+    debugPrint("page: $page");
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Page(name: '< Previous', number: page - 1),
+          ...[
+            for (int i = page; i < page + limit; i++)
+              Page(name: '$i', number: i)
+          ],
+          const Page(name: '...'),
+          Page(name: 'Next >', number: page + 1),
+        ],
+      ),
+    );
+  }
+}
+
+class Page extends StatefulWidget {
+  const Page({
+    Key? key,
+    required this.name,
+    this.number = -1,
+  }) : super(key: key);
+
+  final String name;
+  final int number;
+
+  @override
+  State<Page> createState() => _PageState();
+}
+
+class _PageState extends State<Page> {
+  bool isHover = false;
+  final PageNumberController pageCon = Get.find(tag: 'page');
+
+  @override
+  void initState() {
+    super.initState();
+    pageCon.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int currentPage = pageCon.page.value;
+    if (widget.number < 1) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+        child: Text(
+          widget.name,
+          style: const TextStyle(color: Colors.grey),
+        ),
+      );
+    }
+
+    ButtonStyle buttonStyle = ElevatedButton.styleFrom(
+      minimumSize: const Size(35, 35),
+      padding: const EdgeInsets.all(10.0),
+    );
+    if (widget.number != currentPage) {
+      if (isHover) {
+        buttonStyle = ElevatedButton.styleFrom(
+          minimumSize: const Size(35, 35),
+          padding: const EdgeInsets.all(10.0),
+          side: const BorderSide(color: Colors.grey, width: .5),
+          primary: Colors.white.withOpacity(0),
+        );
+      } else {
+        buttonStyle = ElevatedButton.styleFrom(
+          minimumSize: const Size(35, 35),
+          padding: const EdgeInsets.all(10.0),
+          primary: Colors.white.withOpacity(0),
+          onPrimary: Colors.grey,
+        );
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: ElevatedButton(
+        onPressed: () {
+          debugPrint("curr: $currentPage, num: ${widget.number}");
+          if (widget.number > 0 && widget.number != currentPage) {
+            pageCon.up(widget.number);
+          }
+        },
+        onHover: (v) {
+          setState(() {
+            isHover = v;
+          });
+        },
+        style: buttonStyle,
+        child: Text(widget.name),
+      ),
     );
   }
 }
@@ -213,7 +370,10 @@ class RepoItem extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      debugPrint('click');
+                      Get.toNamed(
+                        AppRoutes.repository,
+                        arguments: {'info': repo!},
+                      );
                     },
                   ),
                   Container(
@@ -290,96 +450,101 @@ class RepoItem extends StatelessWidget {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 10.0),
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Visibility(
-                      visible: repo!.watchersCount > 0,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.star_border,
-                            color: Colors.white60,
-                            size: 16.0,
-                          ),
-                          Text(
-                            Funcs.intToUnit(repo!.watchersCount, 1000, 'k'),
-                            style: const TextStyle(
-                              color: Colors.white60,
-                              fontSize: 11.0,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible: repo!.language != null,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 10.0),
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    children: [
+                      Visibility(
+                        visible: repo!.watchersCount > 0,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              width: 10.0,
-                              height: 10.0,
-                              decoration: BoxDecoration(
-                                color: Globals.getLanguageColor(repo!.language),
-                                shape: BoxShape.circle,
-                              ),
-                              margin: const EdgeInsets.only(right: 4.0),
+                            const Icon(
+                              Icons.star_border,
+                              color: Colors.white60,
+                              size: 16.0,
                             ),
                             Text(
-                              '${repo!.language}',
+                              Funcs.intToUnit(repo!.watchersCount, 1000, 'k'),
                               style: const TextStyle(
-                                color: Colors.white54,
+                                color: Colors.white60,
                                 fontSize: 11.0,
+                                fontWeight: FontWeight.w400,
                               ),
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    Visibility(
-                      visible: repo!.license != null,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          '${repo!.license?['spdx_id']} license',
-                          style: const TextStyle(
-                            color: Colors.white54,
-                            fontSize: 12.0,
+                      Visibility(
+                        visible: repo!.language != null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 10.0,
+                                height: 10.0,
+                                decoration: BoxDecoration(
+                                  color:
+                                      Globals.getLanguageColor(repo!.language),
+                                  shape: BoxShape.circle,
+                                ),
+                                margin: const EdgeInsets.only(right: 4.0),
+                              ),
+                              Text(
+                                '${repo!.language}',
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 11.0,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Updated ${Funcs.dateDiff(repo!.updatedAt)}',
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 11.0,
+                      Visibility(
+                        visible: repo!.license != null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            '${repo!.license?['spdx_id']} license',
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12.0,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    Visibility(
-                      visible: repo!.openIssuesCount > 0,
-                      child: Padding(
+                      Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Text(
-                          '${repo!.openIssuesCount} issue needs help ',
+                          'Updated ${Funcs.dateDiff(repo!.updatedAt)}',
                           style: const TextStyle(
                             color: Colors.white54,
                             fontSize: 11.0,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      Visibility(
+                        visible: repo!.openIssuesCount > 0,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            '${repo!.openIssuesCount} issue needs help ',
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 11.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

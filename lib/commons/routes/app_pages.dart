@@ -1,4 +1,5 @@
 import 'package:custom_simple_github_app/pages/home/index.dart';
+import 'package:custom_simple_github_app/pages/repository/detail.dart';
 import 'package:custom_simple_github_app/pages/repository/search_list.dart';
 import 'package:custom_simple_github_app/pages/user/forgot_password/index.dart';
 import 'package:custom_simple_github_app/pages/user/home/index.dart';
@@ -41,7 +42,11 @@ class AppPages {
     GetPage(
       name: AppRoutes.repositorySearch,
       page: () => const RepositorySearchListView(),
-    )
+    ),
+    GetPage(
+      name: AppRoutes.repository,
+      page: () => const RepositoryDetailView(),
+    ),
   ];
 
   static final unknown = GetPage(

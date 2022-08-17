@@ -11,5 +11,6 @@ abstract class AppRoutes {
   static const signOut = '/user/sign_out';
   static const forgotPassword = '/user/forgot_password';
   static const repositorySearch = '/repository_search';
+  static const repository = '/repository';
   static const notFound = '/not_found';
 }
