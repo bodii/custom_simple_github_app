@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:custom_simple_github_app/models/repo.dart';
+import 'package:custom_simple_github_app/models/commit_info.dart';
+import 'package:custom_simple_github_app/models/content.dart';
+import 'package:custom_simple_github_app/models/repos.dart';
 import 'package:custom_simple_github_app/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -66,7 +68,7 @@ class Apis {
   /// https://docs.github.com/cn/rest/search
   /// https://api.github.com/search/repositories?q=react&sort=stars&order=desc
   /// https://api.github.com/repos/freeCodeCamp/freeCodeCamp
-  Future<List<Repo>> querySearchRepoContext(
+  Future<Repos> querySearchRepos(
     String repoName, {
     String page = '1',
     String perPage = '10',
@@ -88,20 +90,80 @@ class Apis {
     );
 
     if (response.statusCode != HttpStatus.ok) {
-      return [];
+      throw Exception('Failed to load repos');
     }
 
     Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
 
-    List<dynamic> items = json['items'];
+    Repos repos = Repos.fromJson(json);
+    return repos;
+  }
 
-    List<Repo> repoList = [];
-    for (var element in items) {
-      if (element != null) {
-        repoList.add(Repo.fromJson(element as Map<String, dynamic>));
-      }
+  Future<List<CommitInfo>> getCommitList(
+    String repoName, {
+    int page = 1,
+    int perPage = 10,
+    String sort = '',
+    String order = 'desc',
+  }) async {
+    var path = 'repos/$repoName/commits';
+    var params = {
+      'sort': sort,
+      'order': order,
+      'per_page': perPage.toString(),
+      'page': page.toString(),
+    };
+
+    Response response = await query(
+      path: path,
+      params: params,
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to load commits');
     }
 
-    return repoList;
+    List<dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    print(json);
+
+    List<CommitInfo> commits = [
+      for (var c in json) CommitInfo.fromJson(c as Map<String, dynamic>)
+    ];
+    return commits;
+  }
+
+  Future<List<Content>> getContents(
+    String repoName, {
+    int page = 1,
+    int perPage = 10,
+    String sort = '',
+    String order = 'desc',
+  }) async {
+    var path = 'repos/$repoName/contents';
+    var params = {
+      'sort': sort,
+      'order': order,
+      'per_page': perPage.toString(),
+      'page': page.toString(),
+    };
+
+    Response response = await query(
+      path: path,
+      params: params,
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to load contents');
+    }
+
+    List<dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    // print(json);
+
+    List<Content> contents = [
+      for (var c in json) Content.fromJson(c as Map<String, dynamic>)
+    ];
+    return contents;
   }
 }

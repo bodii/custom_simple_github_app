@@ -1,10 +1,12 @@
+import 'package:custom_simple_github_app/models/owner.dart';
+
 class Repo {
   late int id;
   late String nodeId;
   late String name;
   late String fullName;
   late bool private;
-  late Map<String, dynamic> owner;
+  late Owner owner;
   late String htmlUrl;
   late String? description;
   late bool fork;
@@ -47,7 +49,7 @@ class Repo {
   late String deploymentsUrl;
   late String createdAt;
   late String updatedAt;
-  late String pushedAt;
+  late String? pushedAt;
   late String gitUrl;
   late String sshUrl;
   late String cloneUrl;
@@ -87,7 +89,7 @@ class Repo {
     ..name = json["name"] as String
     ..fullName = json["full_name"] as String
     ..private = json["private"] as bool
-    ..owner = json["owner"] as Map<String, dynamic>
+    ..owner = Owner.fromJson(json["owner"])
     ..htmlUrl = json["html_url"] as String
     ..description = json["description"]
     ..fork = json["fork"] as bool
@@ -130,7 +132,7 @@ class Repo {
     ..deploymentsUrl = json["deployments_url"] as String
     ..createdAt = json["created_at"] as String
     ..updatedAt = json["updated_at"] as String
-    ..pushedAt = json["pushed_at"] as String
+    ..pushedAt = json["pushed_at"]
     ..gitUrl = json["git_url"] as String
     ..sshUrl = json["ssh_url"] as String
     ..cloneUrl = json["clone_url"] as String
@@ -162,7 +164,7 @@ class Repo {
     ..defaultBranch = json["default_branch"] as String
     ..score = json["score"] as double;
 
-  Map<String, dynamic> toJon() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'node_id': nodeId,

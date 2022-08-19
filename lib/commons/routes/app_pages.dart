@@ -45,7 +45,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.repository,
-      page: () => const RepositoryDetailView(),
+      page: () => const RepoitoryDetailView(),
     ),
   ];
 

@@ -3,6 +3,7 @@ import 'package:custom_simple_github_app/commons/functions.dart';
 import 'package:custom_simple_github_app/commons/globals.dart';
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
+import 'package:custom_simple_github_app/models/repos.dart';
 import 'package:custom_simple_github_app/pages/repository/page_number_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,13 +27,15 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
   /// 获取数据条数
   int repoResultCount = 0;
 
+  /// 当前请求的页码控制器
   final PageNumberController pageCon =
       Get.put(PageNumberController(), tag: 'page');
 
+  /// 实例化接口请求类
   final Apis apis = Apis();
 
-  /// 当前页码
-  int page = 1;
+  /// 初始化请求数据
+  late Future<List<Repo>> reposList;
 
   @override
   void initState() {
@@ -42,6 +45,7 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
     pageCon.addListener(() {
       setState(() {});
     });
+    reposList = search(searchText, pageCon.page.value);
   }
 
   @override
@@ -91,14 +95,6 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
                     ],
                     onSubmitted: (value) {
                       if (value.isNotEmpty) {
-                        setState(() {
-                          searchText = value;
-                          pageCon.reset();
-                        });
-                      }
-                    },
-                    onChanged: (value) {
-                      if (value.isNotEmpty && value != searchText) {
                         setState(() {
                           searchText = value;
                           pageCon.reset();
@@ -161,7 +157,7 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
             ),
 
             // 分页导航
-            const PagesWidget(),
+            PagesWidget(count: repoResultCount),
           ],
         ),
       ),
@@ -189,18 +185,31 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
           },
         );
       },
-      future: apis.querySearchRepoContext(
-        searchText,
-        page: '${pageCon.page}',
-      ),
+      future: pageCon.page.value == 1
+          ? reposList
+          : search(searchText, pageCon.page.value),
     );
+  }
+
+  Future<List<Repo>> search(String text, int page) async {
+    Repos repos = await apis.querySearchRepos(text, page: '$page');
+    if (page == 1) {
+      setState(() {
+        repoResultCount = repos.totalCount;
+      });
+    }
+
+    return repos.items;
   }
 }
 
 class PagesWidget extends StatefulWidget {
   const PagesWidget({
     Key? key,
+    required this.count,
   }) : super(key: key);
+
+  final int count;
 
   @override
   State<PagesWidget> createState() => _PagesWidgetState();
@@ -208,7 +217,6 @@ class PagesWidget extends StatefulWidget {
 
 class _PagesWidgetState extends State<PagesWidget> {
   final PageNumberController pageCon = Get.find(tag: 'page');
-  final int limit = 3;
 
   @override
   void initState() {
@@ -222,19 +230,40 @@ class _PagesWidgetState extends State<PagesWidget> {
   Widget build(BuildContext context) {
     final PageNumberController pageCon = Get.find(tag: 'page');
     int page = pageCon.page.value;
-    debugPrint("page: $page");
+    int count = widget.count;
+    int countPages = (count / 10).ceil();
+    int limit = 3;
+    if (countPages < limit) {
+      limit = countPages;
+    }
+    int i = (countPages - page) > limit
+        ? page
+        : (page - limit) >= 1
+            ? page
+            : 1;
+    print("page: $page, count: $count, pages: $countPages, limit: $limit");
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Page(name: '< Previous', number: page - 1),
+          Visibility(
+            visible: page > 1,
+            child: Page(name: '< Previous', number: page - 1),
+          ),
           ...[
-            for (int i = page; i < page + limit; i++)
+            for (; i < page + limit && i <= countPages; i++)
               Page(name: '$i', number: i)
           ],
-          const Page(name: '...'),
-          Page(name: 'Next >', number: page + 1),
+          Visibility(
+            visible: countPages > limit + page,
+            child: const Page(name: '...'),
+          ),
+          Visibility(
+            visible: page < countPages,
+            child: Page(name: 'Next >', number: page + 1),
+          ),
         ],
       ),
     );
@@ -306,9 +335,8 @@ class _PageState extends State<Page> {
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: ElevatedButton(
         onPressed: () {
-          debugPrint("curr: $currentPage, num: ${widget.number}");
           if (widget.number > 0 && widget.number != currentPage) {
-            pageCon.up(widget.number);
+            pageCon.upPage(widget.number);
           }
         },
         onHover: (v) {
@@ -377,8 +405,8 @@ class RepoItem extends StatelessWidget {
                     },
                   ),
                   Container(
-                    width: 30.0,
-                    height: 18.0,
+                    width: 35.0,
+                    height: 17.0,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12.0),
