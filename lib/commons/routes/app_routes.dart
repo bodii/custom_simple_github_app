@@ -10,7 +10,9 @@ abstract class AppRoutes {
   static const signUp = '/user/sign_up';
   static const signOut = '/user/sign_out';
   static const forgotPassword = '/user/forgot_password';
-  static const repositorySearch = '/repository_search';
-  static const repository = '/repository';
+  static const repositorySearch = '/repository/search';
+  static const repository = '/repository/detail';
+  static const filepath = '/repository/filepath/:sha';
+  static const content = '/repository/content';
   static const notFound = '/not_found';
 }

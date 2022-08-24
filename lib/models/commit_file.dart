@@ -8,7 +8,7 @@ class CommitFile {
   late String blobUrl;
   late String rawUrl;
   late String contentsUrl;
-  late String patch;
+  late String? patch;
 
   CommitFile();
 

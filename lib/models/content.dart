@@ -8,8 +8,8 @@ class Content {
   late String gitUrl;
   late String? downloadUrl;
   late String type;
-  late String content;
-  late String encoding;
+  late String? content;
+  late String? encoding;
   late Map<String, dynamic> links;
 
   Content();
@@ -24,8 +24,8 @@ class Content {
     ..gitUrl = json['git_url'] as String
     ..downloadUrl = json['download_url']
     ..type = json['type'] as String
-    ..content = json['content'] as String
-    ..encoding = json['encoding'] as String
+    ..content = json['content']
+    ..encoding = json['encoding']
     ..links = json['_links'] as Map<String, dynamic>;
 
   Map<String, dynamic> toJson() {

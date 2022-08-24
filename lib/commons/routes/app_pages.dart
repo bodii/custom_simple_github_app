@@ -1,5 +1,7 @@
 import 'package:custom_simple_github_app/pages/home/index.dart';
+import 'package:custom_simple_github_app/pages/repository/content.dart';
 import 'package:custom_simple_github_app/pages/repository/detail.dart';
+import 'package:custom_simple_github_app/pages/repository/filepath.dart';
 import 'package:custom_simple_github_app/pages/repository/search_list.dart';
 import 'package:custom_simple_github_app/pages/user/forgot_password/index.dart';
 import 'package:custom_simple_github_app/pages/user/home/index.dart';
@@ -45,7 +47,15 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.repository,
-      page: () => const RepoitoryDetailView(),
+      page: () => const RepositoryDetailView(),
+    ),
+    GetPage(
+      name: AppRoutes.filepath,
+      page: () => const RepositoryFilePathView(),
+    ),
+    GetPage(
+      name: AppRoutes.content,
+      page: () => const RepositoryContentView(),
     ),
   ];
 

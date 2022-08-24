@@ -3,7 +3,6 @@ import 'package:custom_simple_github_app/pages/user/sign_up/custom_input_widget.
 import 'package:custom_simple_github_app/pages/user/sign_up/input_config.dart';
 import 'package:custom_simple_github_app/pages/user/sign_up/verify_content_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class TextAnimationWidget extends StatefulWidget {
   const TextAnimationWidget({Key? key}) : super(key: key);

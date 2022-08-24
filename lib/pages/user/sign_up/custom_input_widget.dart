@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CustomInputWidget extends StatefulWidget {
-  CustomInputWidget({
+  const CustomInputWidget({
     Key? key,
     this.visible = false,
     this.label = '',
@@ -15,15 +15,15 @@ class CustomInputWidget extends StatefulWidget {
     this.onChanged,
   }) : super(key: key);
 
-  bool visible;
-  String label;
-  bool obscure;
-  bool buttonVisible;
-  Color suffixColor;
-  Text prefix;
-  void Function()? onPressed;
-  TextEditingController? inputController;
-  void Function(String)? onChanged;
+  final bool visible;
+  final String label;
+  final bool obscure;
+  final bool buttonVisible;
+  final Color suffixColor;
+  final Text prefix;
+  final void Function()? onPressed;
+  final TextEditingController? inputController;
+  final void Function(String)? onChanged;
 
   @override
   _CustomInputWidgetState createState() => _CustomInputWidgetState();

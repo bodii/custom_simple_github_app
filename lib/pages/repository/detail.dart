@@ -1,5 +1,6 @@
 import 'package:custom_simple_github_app/commons/apis.dart';
 import 'package:custom_simple_github_app/commons/functions.dart';
+import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:custom_simple_github_app/models/commit_info.dart';
 import 'package:custom_simple_github_app/models/content.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
@@ -7,29 +8,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-class RepoitoryDetailView extends StatefulWidget {
-  const RepoitoryDetailView({Key? key}) : super(key: key);
+class RepositoryDetailView extends StatefulWidget {
+  const RepositoryDetailView({Key? key}) : super(key: key);
 
   @override
-  State<RepoitoryDetailView> createState() => _RepoitoryDetailViewState();
+  State<RepositoryDetailView> createState() => _RepositoryDetailViewState();
 }
 
-class _RepoitoryDetailViewState extends State<RepoitoryDetailView> {
+class _RepositoryDetailViewState extends State<RepositoryDetailView> {
   late Repo repo;
   List<CommitInfo> commitList = [];
   List<Content> contentList = [];
+  Apis apis = Apis();
 
   @override
   void initState() {
     super.initState();
     repo = Get.arguments['info'];
-    getCommitList();
-  }
-
-  void getCommitList() async {
-    Apis apis = Apis();
-    commitList = await apis.getCommitList(repo.fullName);
-    contentList = await apis.getContents(repo.fullName);
   }
 
   @override
@@ -325,79 +320,172 @@ class _RepoitoryDetailViewState extends State<RepoitoryDetailView> {
                 ],
               ),
             ),
-            Container(
-              height: 400.0,
-              width: double.infinity,
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                border: Border.all(color: Colors.grey, width: .6),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 25.0,
-                        height: 25.0,
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            commitList.first.author.avatarUrl,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          commitList.first.commit.author['name'],
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: SizedBox(
-                          width: 100.0,
-                          child: Text(
-                            commitList.first.commit.message,
-                            style: const TextStyle(color: Colors.grey),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        Icons.check,
-                        color: Colors.green[800],
-                        size: 18.0,
-                      ),
-                      const Text(
-                        '21 hours age',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      const Icon(
-                        Icons.restore,
-                        color: Colors.grey,
-                        size: 20.0,
-                      ),
-                      // const Text(
-                      //   '15,124',
-                      //   style: TextStyle(
-                      //     color: Colors.grey,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ],
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: getCommitFirstWidget(),
             ),
+            Expanded(child: getContentsList()),
           ],
         ),
       ),
     );
+  }
+
+  Widget getCommitFirstWidget() {
+    return FutureBuilder<CommitInfo>(
+      future: apis.getBranchCommit(repo.fullName, repo.defaultBranch),
+      builder: ((BuildContext context, AsyncSnapshot<CommitInfo> snapshot) {
+        if (snapshot.connectionState != ConnectionState.done ||
+            !snapshot.hasData ||
+            snapshot.hasError) {
+          return Container();
+        }
+
+        return Row(
+          children: [
+            SizedBox(
+              width: 25.0,
+              height: 25.0,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(
+                  snapshot.data!.author.avatarUrl,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                snapshot.data!.commit.author['name'],
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: SizedBox(
+                width: 220.0,
+                child: Text(
+                  snapshot.data!.commit.message,
+                  style: const TextStyle(color: Colors.grey),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            /*
+            Icon(
+              Icons.check,
+              color: Colors.green[800],
+              size: 18.0,
+            ),
+            const Text(
+              '21 hours age',
+              style: TextStyle(color: Colors.grey),
+            ),
+            const Icon(
+              Icons.restore,
+              color: Colors.grey,
+              size: 20.0,
+            ),
+            const Text(
+            '15,124',
+            style: TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+            ),
+            ),*/
+          ],
+        );
+      }),
+    );
+  }
+
+  Widget getContentsList() {
+    return FutureBuilder<List<Content>>(
+      future: apis.getContents(repo.fullName),
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.hasError) {
+          return const Center(
+            child: Text('Not Found!'),
+          );
+        }
+
+        return ListView.separated(
+          itemBuilder: (context, index) {
+            return ListTile(
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    snapshot.data![index].type == 'file'
+                        ? Icons.insert_drive_file
+                        : Icons.folder,
+                    color: Colors.grey,
+                    size: 18.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      snapshot.data![index].name,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              title: const Text(
+                // snapshot.data![index].name,
+                '',
+                style: TextStyle(color: Colors.grey),
+              ),
+              onTap: () {
+                if (snapshot.data![index].type != 'file') {
+                  Get.toNamed(
+                    AppRoutes.filepath
+                        .replaceAll(':sha', snapshot.data![index].sha),
+                    arguments: {
+                      'repo': repo,
+                      'path': snapshot.data![index].path,
+                      'name': snapshot.data![index].name,
+                      'url': snapshot.data![index].url,
+                    },
+                  );
+                } else {
+                  Get.toNamed(
+                    AppRoutes.content,
+                    arguments: {
+                      'repo': repo,
+                      'path': snapshot.data![index].path,
+                      'name': snapshot.data![index].name,
+                      'url': snapshot.data![index].url,
+                    },
+                  );
+                }
+              },
+            );
+          },
+          itemCount: snapshot.data?.length ?? 0,
+          separatorBuilder: (context, index) => Divider(
+            height: .3,
+            color: Colors.grey.shade700,
+          ),
+        );
+      }),
+    );
+  }
+
+  Future<CommitInfo> getCommitFirst() async {
+    commitList = await apis.getCommitList(repo.fullName);
+
+    return commitList.first;
   }
 }

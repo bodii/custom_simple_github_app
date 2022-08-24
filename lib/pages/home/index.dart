@@ -130,6 +130,7 @@ class _SearchWidgetState extends State<SearchWidget> {
   bool hasInput = false;
   bool hasVisibitySearchJump = false;
   String searchText = '';
+  String subSearchText = '';
 
   @override
   void initState() {
@@ -207,10 +208,11 @@ class _SearchWidgetState extends State<SearchWidget> {
                   onChanged: (text) {
                     setState(() {
                       searchText = text;
+                      subSearchText = text;
                       hasVisibitySearchJump = text.isNotEmpty;
                       if (text.length > 10) {
-                        searchText =
-                            searchText.substring(0, 10).padRight(11, '...');
+                        subSearchText =
+                            subSearchText.substring(0, 10).padRight(11, '...');
                       }
                     });
                   },
@@ -298,7 +300,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                         SizedBox(
                           width: 100.0,
                           child: Text(
-                            searchText,
+                            subSearchText,
                             style: const TextStyle(
                               color: Colors.white60,
                             ),

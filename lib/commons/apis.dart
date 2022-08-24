@@ -27,6 +27,26 @@ class Apis {
     return response;
   }
 
+  Future<Response> getUrl(String url) {
+    Future<Response> response = _client.get(
+      Uri.parse(url),
+      headers: _headers,
+    );
+
+    return response;
+  }
+
+  Future get(String url, [String errorMsg = 'Failed to load data of']) async {
+    Response response = await getUrl(url);
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('$errorMsg $url');
+    }
+
+    var json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    return json;
+  }
+
   Future<Response> post(
       {String? path,
       Map<String, String>? headers,
@@ -125,8 +145,6 @@ class Apis {
 
     List<dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
 
-    print(json);
-
     List<CommitInfo> commits = [
       for (var c in json) CommitInfo.fromJson(c as Map<String, dynamic>)
     ];
@@ -165,5 +183,65 @@ class Apis {
       for (var c in json) Content.fromJson(c as Map<String, dynamic>)
     ];
     return contents;
+  }
+
+  Future<List<Content>> getPath(String repoName, [String path = '']) async {
+    var uri = 'repos/$repoName/contents/$path';
+    debugPrint(uri);
+
+    Response response = await query(
+      path: uri,
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to load content');
+    }
+
+    List<dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+    List<Content> contents = [
+      for (var c in json) Content.fromJson(c as Map<String, dynamic>)
+    ];
+    return contents;
+  }
+
+  Future<Content> getContent(
+    String repoName, [
+    String path = '',
+    String branch = 'main',
+  ]) async {
+    var uri = 'repos/$repoName/contents/$path';
+    debugPrint(uri);
+
+    Response response = await query(
+      path: uri,
+      params: {'ref': branch},
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      debugPrint(response.statusCode.toString());
+      throw Exception('Failed to load content');
+    }
+
+    Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+    return Content.fromJson(json);
+  }
+
+  Future<CommitInfo> getBranchCommit(
+    String repoName,
+    String branchOrTag,
+  ) async {
+    var path = 'repos/$repoName/commits/$branchOrTag';
+
+    Response response = await query(
+      path: path,
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to load a branch commit');
+    }
+
+    Map<String, dynamic> json = jsonDecode(utf8.decode(response.bodyBytes));
+
+    return CommitInfo.fromJson(json);
   }
 }

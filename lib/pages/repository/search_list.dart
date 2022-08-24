@@ -241,7 +241,6 @@ class _PagesWidgetState extends State<PagesWidget> {
         : (page - limit) >= 1
             ? page
             : 1;
-    print("page: $page, count: $count, pages: $countPages, limit: $limit");
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),

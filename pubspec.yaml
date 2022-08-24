@@ -38,6 +38,8 @@ dependencies:
   flutter_svg: ^1.1.0
   get: ^4.6.5
   shared_preferences: ^2.0.15
+  flutter_highlight: ^0.7.0
+  flutter_markdown: ^0.6.10+4
 
 dev_dependencies:
   flutter_test:
