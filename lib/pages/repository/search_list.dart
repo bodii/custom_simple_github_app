@@ -4,13 +4,13 @@ import 'package:custom_simple_github_app/commons/globals.dart';
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:custom_simple_github_app/models/repos.dart';
-import 'package:custom_simple_github_app/pages/repository/page_number_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class RepositorySearchListView extends StatefulWidget {
-  const RepositorySearchListView({Key? key}) : super(key: key);
+  const RepositorySearchListView(this.searchText, {Key? key}) : super(key: key);
+  final String searchText;
 
   @override
   State<RepositorySearchListView> createState() =>
@@ -18,18 +18,11 @@ class RepositorySearchListView extends StatefulWidget {
 }
 
 class _RepositorySearchListViewState extends State<RepositorySearchListView> {
-  /// 获取路由传过来的参数
-  String searchText = Get.arguments;
-
   /// 声明一个本页搜索输入框内容的controller
   TextEditingController searchController = TextEditingController();
 
   /// 获取数据条数
   int repoResultCount = 0;
-
-  /// 当前请求的页码控制器
-  final PageNumberController pageCon =
-      Get.put(PageNumberController(), tag: 'page');
 
   /// 实例化接口请求类
   final Apis apis = Apis();
@@ -37,15 +30,14 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
   /// 初始化请求数据
   late Future<List<Repo>> reposList;
 
+  late String searchText;
+
   @override
   void initState() {
     super.initState();
-
+    searchText = widget.searchText;
     searchController.text = searchText;
-    pageCon.addListener(() {
-      setState(() {});
-    });
-    reposList = search(searchText, pageCon.page.value);
+    reposList = search(searchText, 1);
   }
 
   @override
@@ -97,7 +89,6 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
                       if (value.isNotEmpty) {
                         setState(() {
                           searchText = value;
-                          pageCon.reset();
                         });
                       }
                     },
@@ -185,9 +176,7 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
           },
         );
       },
-      future: pageCon.page.value == 1
-          ? reposList
-          : search(searchText, pageCon.page.value),
+      future: search(searchText, 1),
     );
   }
 
@@ -216,20 +205,14 @@ class PagesWidget extends StatefulWidget {
 }
 
 class _PagesWidgetState extends State<PagesWidget> {
-  final PageNumberController pageCon = Get.find(tag: 'page');
-
   @override
   void initState() {
     super.initState();
-    pageCon.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final PageNumberController pageCon = Get.find(tag: 'page');
-    int page = pageCon.page.value;
+    int page = 1;
     int count = widget.count;
     int countPages = (count / 10).ceil();
     int limit = 3;
@@ -285,19 +268,15 @@ class Page extends StatefulWidget {
 
 class _PageState extends State<Page> {
   bool isHover = false;
-  final PageNumberController pageCon = Get.find(tag: 'page');
 
   @override
   void initState() {
     super.initState();
-    pageCon.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    int currentPage = pageCon.page.value;
+    int currentPage = 1;
     if (widget.number < 1) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
@@ -334,9 +313,7 @@ class _PageState extends State<Page> {
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: ElevatedButton(
         onPressed: () {
-          if (widget.number > 0 && widget.number != currentPage) {
-            pageCon.upPage(widget.number);
-          }
+          if (widget.number > 0 && widget.number != currentPage) {}
         },
         onHover: (v) {
           setState(() {
@@ -397,9 +374,9 @@ class RepoItem extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      Get.toNamed(
+                      context.goNamed(
                         AppRoutes.repository,
-                        arguments: {'info': repo!},
+                        params: {'info': repo!.toString()},
                       );
                     },
                   ),

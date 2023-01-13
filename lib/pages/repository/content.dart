@@ -8,10 +8,13 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/atelier-dune-dark.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
-import 'package:get/get.dart';
 
 class RepositoryContentView extends StatefulWidget {
-  const RepositoryContentView({Key? key}) : super(key: key);
+  const RepositoryContentView(this.path, this.repo, this.name, {Key? key})
+      : super(key: key);
+  final String path;
+  final Repo repo;
+  final String name;
 
   @override
   State<RepositoryContentView> createState() => _RepositoryContentViewState();
@@ -26,9 +29,9 @@ class _RepositoryContentViewState extends State<RepositoryContentView> {
   @override
   void initState() {
     super.initState();
-    path = Get.arguments['path'];
-    repo = Get.arguments['repo'];
-    name = Get.arguments['name'];
+    path = widget.path;
+    repo = widget.repo;
+    name = widget.name;
     apis = Apis();
   }
 

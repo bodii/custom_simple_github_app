@@ -1,7 +1,6 @@
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
-import 'package:custom_simple_github_app/pages/home/index.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   // debugPaintBaselinesEnabled = true;
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp.router(
       title: 'custom simple github app',
       theme: ThemeData(
         // This is the theme of your application.
@@ -29,10 +28,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomeIndexView(),
-      // initialRoute: AppPages.init,
-      getPages: AppPages.routes,
-      unknownRoute: AppPages.unknown,
+      // home: const HomeIndexView(),
+      routerConfig: GoRouter(
+        initialLocation: AppPages.init,
+        routes: AppPages.routes,
+        errorBuilder: AppPages.unknown,
+      ),
     );
   }
 }

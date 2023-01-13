@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeIndexView extends StatelessWidget {
   const HomeIndexView({Key? key}) : super(key: key);
@@ -31,7 +31,7 @@ class HomeIndexView extends StatelessWidget {
                 items: <PopupMenuEntry>[
                   PopupMenuItem(
                     onTap: () {
-                      Get.toNamed(AppRoutes.signIn);
+                      context.goNamed(AppRoutes.signIn);
                       showDialog(
                           context: context,
                           builder: (context) {
@@ -50,7 +50,7 @@ class HomeIndexView extends StatelessWidget {
                   PopupMenuItem(
                     padding: const EdgeInsets.only(left: 25.0, top: 8.0),
                     onTap: () {
-                      Get.toNamed(AppRoutes.signUp);
+                      context.goNamed(AppRoutes.signUp);
                       showDialog(
                           context: context,
                           builder: (context) {
@@ -218,9 +218,9 @@ class _SearchWidgetState extends State<SearchWidget> {
                   },
                   onSubmitted: (value) {
                     if (value.isNotEmpty) {
-                      Get.toNamed(
+                      context.goNamed(
                         AppRoutes.repositorySearch,
-                        arguments: value,
+                        params: {"value": value},
                       );
                     }
                   },
@@ -265,9 +265,11 @@ class _SearchWidgetState extends State<SearchWidget> {
             child: Visibility(
               visible: hasVisibitySearchJump,
               child: GestureDetector(
-                onTap: () => Get.toNamed(
+                onTap: () => context.goNamed(
                   AppRoutes.repositorySearch,
-                  arguments: searchText,
+                  params: {
+                    'searchText': searchText,
+                  },
                 ),
                 child: MouseRegion(
                   onEnter: (PointerEnterEvent e) {

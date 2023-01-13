@@ -1,7 +1,7 @@
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class SignInIndexView extends StatelessWidget {
   const SignInIndexView({Key? key}) : super(key: key);
@@ -57,7 +57,7 @@ class SignInIndexView extends StatelessWidget {
                           'Greate an account',
                           style: TextStyle(color: Colors.blue),
                         ),
-                        onTap: () => Get.toNamed(AppRoutes.signUp),
+                        onTap: () => context.goNamed(AppRoutes.signUp),
                       ),
                       const Text(
                         '.',
@@ -128,7 +128,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
+                    onPressed: () => context.goNamed(AppRoutes.forgotPassword),
                     child: const Text(
                       'Forgot password?',
                       style: TextStyle(
@@ -179,7 +179,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                     ),
                   ),
                 ),
-                onPressed: () => Get.toNamed(AppRoutes.signIn),
+                onPressed: () => context.goNamed(AppRoutes.signIn),
               ),
             ],
           ),

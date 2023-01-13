@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:custom_simple_github_app/commons/apis.dart';
 import 'package:custom_simple_github_app/commons/functions.dart';
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
@@ -6,10 +8,11 @@ import 'package:custom_simple_github_app/models/content.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class RepositoryDetailView extends StatefulWidget {
-  const RepositoryDetailView({Key? key}) : super(key: key);
+  const RepositoryDetailView(this.repo, {Key? key}) : super(key: key);
+  final String repo;
 
   @override
   State<RepositoryDetailView> createState() => _RepositoryDetailViewState();
@@ -24,7 +27,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
   @override
   void initState() {
     super.initState();
-    repo = Get.arguments['info'];
+    repo = Repo.fromJson(jsonDecode(widget.repo));
   }
 
   @override
@@ -449,21 +452,21 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
               ),
               onTap: () {
                 if (snapshot.data![index].type != 'file') {
-                  Get.toNamed(
+                  context.goNamed(
                     AppRoutes.filepath
                         .replaceAll(':sha', snapshot.data![index].sha),
-                    arguments: {
-                      'repo': repo,
+                    params: {
+                      'repo': repo.toString(),
                       'path': snapshot.data![index].path,
                       'name': snapshot.data![index].name,
                       'url': snapshot.data![index].url,
                     },
                   );
                 } else {
-                  Get.toNamed(
+                  context.goNamed(
                     AppRoutes.content,
-                    arguments: {
-                      'repo': repo,
+                    params: {
+                      'repo': repo.toString(),
                       'path': snapshot.data![index].path,
                       'name': snapshot.data![index].name,
                       'url': snapshot.data![index].url,

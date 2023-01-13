@@ -4,7 +4,6 @@ import 'package:custom_simple_github_app/pages/user/sign_up/verify_image_widget.
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({Key? key}) : super(key: key);
@@ -56,7 +55,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   height: 46.0,
                   child: SvgPicture.asset('assets/images/favicon-dark.svg'),
                 ),
-                onTap: () => Get.toNamed(AppRoutes.home),
+                onTap: () => context.goNamed(AppRoutes.home),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20.0),

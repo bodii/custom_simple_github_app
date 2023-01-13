@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:custom_simple_github_app/pages/home/index.dart';
 import 'package:custom_simple_github_app/pages/repository/content.dart';
 import 'package:custom_simple_github_app/pages/repository/detail.dart';
@@ -8,7 +11,7 @@ import 'package:custom_simple_github_app/pages/user/home/index.dart';
 import 'package:custom_simple_github_app/pages/user/sign_in/index.dart';
 import 'package:custom_simple_github_app/pages/user/sign_out/index.dart';
 import 'package:custom_simple_github_app/pages/user/sign_up/index.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 part 'app_routes.dart';
@@ -16,51 +19,71 @@ part 'app_routes.dart';
 class AppPages {
   static const init = AppRoutes.home;
 
-  static final routes = [
-    GetPage(
+  static final List<RouteBase> routes = <RouteBase>[
+    GoRoute(
+      path: AppRoutes.home,
       name: AppRoutes.home,
-      page: () => const HomeIndexView(),
+      builder: (context, state) => const HomeIndexView(),
     ),
-    GetPage(
+    GoRoute(
+      path: AppRoutes.user,
       name: AppRoutes.user,
-      page: () => const UserHomeView(),
+      builder: (context, state) => const UserHomeView(),
     ),
-    GetPage(
+    GoRoute(
+      path: AppRoutes.signIn,
       name: AppRoutes.signIn,
-      page: () => const SignInIndexView(),
+      builder: (context, state) => const SignInIndexView(),
     ),
-    GetPage(
+    GoRoute(
+      path: AppRoutes.signUp,
       name: AppRoutes.signUp,
-      page: () => const SignUpView(),
+      builder: (context, state) => const SignUpView(),
     ),
-    GetPage(
+    GoRoute(
+      path: AppRoutes.signOut,
       name: AppRoutes.signOut,
-      page: () => const SignOutView(),
+      builder: (context, state) => const SignOutView(),
     ),
-    GetPage(
+    GoRoute(
+      path: AppRoutes.forgotPassword,
       name: AppRoutes.forgotPassword,
-      page: () => const ForgotPasswordView(),
+      builder: (context, state) => const ForgotPasswordView(),
     ),
-    GetPage(
-      name: AppRoutes.repositorySearch,
-      page: () => const RepositorySearchListView(),
-    ),
-    GetPage(
-      name: AppRoutes.repository,
-      page: () => const RepositoryDetailView(),
-    ),
-    GetPage(
-      name: AppRoutes.filepath,
-      page: () => const RepositoryFilePathView(),
-    ),
-    GetPage(
-      name: AppRoutes.content,
-      page: () => const RepositoryContentView(),
-    ),
+    GoRoute(
+        path: AppRoutes.repositorySearch,
+        name: AppRoutes.repositorySearch,
+        builder: (context, state) {
+          String searchText = state.queryParams['searchText'] ?? '';
+          return RepositorySearchListView(searchText);
+        }),
+    GoRoute(
+        path: AppRoutes.repository,
+        name: AppRoutes.repository,
+        builder: (context, state) {
+          String repo = state.queryParams['info'] ?? '';
+          return RepositoryDetailView(repo);
+        }),
+    GoRoute(
+        path: AppRoutes.filepath,
+        name: AppRoutes.filepath,
+        builder: (context, state) {
+          String path = state.params['path'] ?? '';
+          Repo repo = state.params['repo'] as Repo;
+          String url = state.params['name'] ?? '';
+          return RepositoryFilePathView(path, repo, url);
+        }),
+    GoRoute(
+        path: AppRoutes.content,
+        name: AppRoutes.content,
+        builder: (context, state) {
+          String path = state.params['path'] ?? '';
+          Repo repo = state.params['repo'] as Repo;
+          String name = state.params['name'] ?? '';
+          return RepositoryContentView(path, repo, name);
+        }),
   ];
 
-  static final unknown = GetPage(
-    name: AppRoutes.notFound,
-    page: () => const Text('not found'),
-  );
+  static final Text Function(BuildContext context, GoRouterState state)
+      unknown = (context, state) => const Text('not found');
 }
