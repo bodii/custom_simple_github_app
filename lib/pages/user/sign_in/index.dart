@@ -10,7 +10,13 @@ class SignInIndexView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign in'),
+        leading: ElevatedButton(
+          onPressed: () {
+            context.goNamed(AppRoutes.home);
+          },
+          child: const Icon(Icons.home),
+        ),
+        title: const Text("Sign in"),
       ),
       body: Container(
         color: Colors.black87,

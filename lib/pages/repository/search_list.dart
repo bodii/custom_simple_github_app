@@ -9,7 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class RepositorySearchListView extends StatefulWidget {
-  const RepositorySearchListView(this.searchText, {Key? key}) : super(key: key);
+  const RepositorySearchListView({Key? key, required this.searchText})
+      : super(key: key);
   final String searchText;
 
   @override
@@ -35,6 +36,7 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
   @override
   void initState() {
     super.initState();
+
     searchText = widget.searchText;
     searchController.text = searchText;
     reposList = search(searchText, 1);
@@ -121,7 +123,7 @@ class _RepositorySearchListViewState extends State<RepositorySearchListView> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey.shade900,
+                      backgroundColor: Colors.grey.shade900,
                     ),
                     child: const Text(
                       'Search',
@@ -297,14 +299,14 @@ class _PageState extends State<Page> {
           minimumSize: const Size(35, 35),
           padding: const EdgeInsets.all(10.0),
           side: const BorderSide(color: Colors.grey, width: .5),
-          primary: Colors.white.withOpacity(0),
+          backgroundColor: Colors.white.withOpacity(0),
         );
       } else {
         buttonStyle = ElevatedButton.styleFrom(
           minimumSize: const Size(35, 35),
           padding: const EdgeInsets.all(10.0),
-          primary: Colors.white.withOpacity(0),
-          onPrimary: Colors.grey,
+          backgroundColor: Colors.white.withOpacity(0),
+          foregroundColor: Colors.grey,
         );
       }
     }
@@ -403,7 +405,7 @@ class RepoItem extends StatelessWidget {
                 height: 26.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.grey.shade900,
+                    backgroundColor: Colors.grey.shade900,
                     padding: const EdgeInsets.all(0),
                   ),
                   child: Row(

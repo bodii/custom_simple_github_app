@@ -23,9 +23,6 @@ class _TextAnimationWidgetState extends State<TextAnimationWidget>
   late final Animation<String> textAnimation;
   late final Animation<int> cursorStartAnimation;
 
-  /// 区域宽度
-  final double _width = 380.0;
-
   /// 区域高度: 动态
   double _height = 70.0;
 

@@ -4,8 +4,6 @@ import 'package:custom_simple_github_app/commons/apis.dart';
 import 'package:custom_simple_github_app/models/content.dart';
 import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/atelier-dune-dark.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
 

@@ -96,7 +96,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
                     constraints: const BoxConstraints(),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.grey.shade900,
+                        backgroundColor: Colors.grey.shade900,
                         padding: const EdgeInsets.all(0),
                       ),
                       child: Padding(
@@ -126,7 +126,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
                     constraints: const BoxConstraints(),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.grey.shade900,
+                        backgroundColor: Colors.grey.shade900,
                         padding: const EdgeInsets.all(0),
                       ),
                       child: Padding(
@@ -156,7 +156,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
                     constraints: const BoxConstraints(),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.grey.shade900,
+                        backgroundColor: Colors.grey.shade900,
                         padding: const EdgeInsets.all(0),
                       ),
                       child: Padding(
@@ -187,7 +187,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
                     constraints: const BoxConstraints(),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.grey.shade900,
+                        backgroundColor: Colors.grey.shade900,
                         padding: const EdgeInsets.all(0),
                       ),
                       child: Padding(
@@ -230,7 +230,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
                     height: 30.0,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.grey.shade900,
+                        backgroundColor: Colors.grey.shade900,
                         padding: const EdgeInsets.all(0),
                       ),
                       child: Padding(
@@ -269,7 +269,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
                           height: 30.0,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.grey.shade900,
+                              backgroundColor: Colors.grey.shade900,
                               padding: const EdgeInsets.all(0),
                             ),
                             child: const Padding(
@@ -291,7 +291,7 @@ class _RepositoryDetailViewState extends State<RepositoryDetailView> {
                         height: 30.0,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.green[900],
+                            backgroundColor: Colors.green[900],
                             padding: const EdgeInsets.all(0),
                           ),
                           child: Padding(

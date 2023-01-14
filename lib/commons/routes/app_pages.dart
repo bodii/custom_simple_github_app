@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:custom_simple_github_app/models/repo.dart';
 import 'package:custom_simple_github_app/pages/home/index.dart';
 import 'package:custom_simple_github_app/pages/repository/content.dart';
@@ -54,14 +52,16 @@ class AppPages {
         path: AppRoutes.repositorySearch,
         name: AppRoutes.repositorySearch,
         builder: (context, state) {
-          String searchText = state.queryParams['searchText'] ?? '';
-          return RepositorySearchListView(searchText);
+          debugPrint("params: ${state.params.toString()}");
+          // String searchText = state.params['searchText'] ?? '';
+          String searchText = 'cc';
+          return RepositorySearchListView(searchText: searchText);
         }),
     GoRoute(
         path: AppRoutes.repository,
         name: AppRoutes.repository,
         builder: (context, state) {
-          String repo = state.queryParams['info'] ?? '';
+          String repo = state.params['info'] ?? '';
           return RepositoryDetailView(repo);
         }),
     GoRoute(

@@ -1,6 +1,5 @@
 import 'package:custom_simple_github_app/commons/globals.dart';
 import 'package:custom_simple_github_app/commons/routes/app_pages.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -218,9 +217,10 @@ class _SearchWidgetState extends State<SearchWidget> {
                   },
                   onSubmitted: (value) {
                     if (value.isNotEmpty) {
+                      debugPrint(value);
                       context.goNamed(
                         AppRoutes.repositorySearch,
-                        params: {"value": value},
+                        params: {"searchText": value},
                       );
                     }
                   },
